@@ -13,9 +13,8 @@ module Rails
         yield
 
         if CrudConfig.instance.enabled
-          Thread.new do
+          # Thread.new do
             sheet = CrudData.instance.workbook[0]
-            headers = sheet[0].cells.map(&:value)
 
             CrudOperations.instance.table_operations.each_key do |table_name|
               row = CrudData.instance.crud_rows[method]["#{controller_path}##{action_name}"]
@@ -45,7 +44,7 @@ module Rails
             CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
 
             CrudOperations.instance.log_operations
-          end
+          # end
         end
       end
     end
