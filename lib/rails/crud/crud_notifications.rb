@@ -1,4 +1,4 @@
-require_relative "crud/crud_config"
+require_relative "crud_config"
 
 module Rails
   module Crud
