@@ -4,7 +4,7 @@ require 'singleton'
 class CrudConfig
   include Singleton
 
-  attr_accessor :enabled, :base_dir, :crud_file, :crud_log, :method_col, :action_col, :table_start_col, :header_bg_color
+  attr_accessor :enabled, :base_dir, :crud_file, :method_col, :action_col, :table_start_col, :header_bg_color
 
   def initialize
     config_file = '.crudconfig'
@@ -17,7 +17,6 @@ class CrudConfig
     @enabled = config.key?('enabled') ? config['enabled'] : true
     @base_dir = config['base_dir'] || 'doc'
     @crud_file = config['crud_file'] || 'crud.xlsx'
-    @crud_log = config['crud_log'] || 'crud.log'
     @method_col = config['method_col'] || 'Verb'
     @action_col = config['action_col'] || 'Controller#Action'
     @table_start_col = config['table_start_col'] || 'active_admin_comments'
@@ -34,10 +33,6 @@ class CrudConfig
 
   def self.crud_file
     instance.crud_file
-  end
-
-  def self.crud_log
-    instance.crud_log
   end
 
   def self.method_col
