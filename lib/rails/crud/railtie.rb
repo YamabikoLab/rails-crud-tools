@@ -7,6 +7,11 @@ module Rails
       initializer 'rails-crud.add_after_action' do
         ActiveSupport.on_load(:action_controller) do
           include Rails::Crud::OperationsLogger
+
+          # 全てのコントローラにafter_actionフィルタを追加
+          ActionController::Base.class_eval do
+            after_action :log_crud_operations
+          end
         end
       end
     end
