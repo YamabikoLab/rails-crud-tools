@@ -1,28 +1,15 @@
 FROM ruby:3.1.4
 
-ARG USERNAME=ruby
 ARG IDEURL=https://download.jetbrains.com/ruby/RubyMine-2024.3.1.tar.gz
-
-RUN useradd -m $USERNAME && \
-    mkdir -p /etc/sudoers.d && \
-    usermod -aG sudo $USERNAME && \
-    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME
-
-ENV PROJDIR=/home/$USERNAME/app/
 
 RUN apt-get update -qq && apt-get install -y \
   build-essential \
   vim && \
   rm -rf /var/lib/apt/lists/*
 
-USER $USERNAME
-WORKDIR /home/$USERNAME
-
-#COPY Gemfile ./
-
-#RUN bundle install
-
 ENV EDITOR=vim
+
+WORKDIR /root/app
 
 RUN curl -fsSL -o ide.tar.gz $IDEURL && \
 mkdir ide && \
