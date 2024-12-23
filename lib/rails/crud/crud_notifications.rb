@@ -20,7 +20,7 @@ module Rails
             # CrudOperations インスタンスを使用して操作を追加
             CrudOperations.instance.add_operation(table_name, operation)
 
-            CrudLogger.logger.info("#{data[:name]} - #{data[:sql]}")
+            CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
           end
         end
       end

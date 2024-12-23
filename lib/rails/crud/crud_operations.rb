@@ -17,7 +17,7 @@ module Rails
       end
 
       def log_operations()
-        logger.info "\nSummary:"
+        CrudLogger.logger.info "\nSummary:"
         @table_operations.each do |table_name, operations|
           CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
         end
