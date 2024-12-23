@@ -1,4 +1,5 @@
 require 'yaml'
+require 'singleton'
 
 class CrudConfig
   include Singleton
@@ -21,6 +22,38 @@ class CrudConfig
     @action_col = config['action_col'] || 'Controller#Action'
     @table_start_col = config['table_start_col'] || 'active_admin_comments'
     @header_bg_color = config['header_bg_color'] || '00FFCC'
+  end
+
+  def self.enabled
+    instance.enabled
+  end
+
+  def self.base_dir
+    instance.base_dir
+  end
+
+  def self.crud_file
+    instance.crud_file
+  end
+
+  def self.crud_log
+    instance.crud_log
+  end
+
+  def self.method_col
+    instance.method_col
+  end
+
+  def self.action_col
+    instance.action_col
+  end
+
+  def self.table_start_col
+    instance.table_start_col
+  end
+
+  def self.header_bg_color
+    instance.header_bg_color
   end
 
   def crud_file_path
