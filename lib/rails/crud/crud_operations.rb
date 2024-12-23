@@ -20,7 +20,7 @@ module Rails
         @logs << log_entry
       end
 
-      def log_operations(logger)
+      def log_operations()
         @logs.each do |log_entry|
           @logger.info log_entry
         end

@@ -41,11 +41,7 @@ module Rails
             # Excelファイルを書き込む
             CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
 
-            summary_log = "\nSummary:"
-            CrudOperations.instance.table_operations.each do |table_name, operations|
-              summary_log += "\n#{table_name} - #{operations.join(', ')}"
-            end
-            CrudOperations.instance.add_log(summary_log)
+            CrudOperations.instance.log_operations
           end
         end
       end
