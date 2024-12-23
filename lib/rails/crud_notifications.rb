@@ -26,5 +26,7 @@ module Rails
         end
       end
     end
+    # モジュールがロードされたときに初期化処理を実行
+    setup_notifications
   end
 end
