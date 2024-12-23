@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: rails_crud
+    volumes:
+      - .:/home/ruby/app
+      - /home/ruby/app/ide
+      - ~/.gitconfig:/home/ruby/.gitconfig
+      - ~/.ssh:/home/ruby/.ssh
+    ports:
+      - '5995:5995'
+    tty: true
