@@ -1,4 +1,5 @@
 require 'rails/railtie'
+require_relative 'operations_logger'
 
 module Rails
   module Crud
