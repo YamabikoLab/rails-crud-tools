@@ -5,6 +5,7 @@ require "rubyXL/convenience_methods/font"
 require "rubyXL/convenience_methods/workbook"
 require "rubyXL/convenience_methods/worksheet"
 require_relative "crud_config"
+require_relative "crud_notifications"
 
 module Rails
   module Crud
@@ -119,5 +120,6 @@ module Rails
 
     # 初期化処理
     self.load_crud_data
+    setup_notifications
   end
 end
