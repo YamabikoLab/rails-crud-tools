@@ -1,13 +1,16 @@
+require 'yaml'
+
 class CrudConfig
   include Singleton
 
   attr_accessor :enabled, :base_dir, :crud_file, :crud_log, :method_col, :action_col, :table_start_col, :header_bg_color
 
-  def initialize(config_file)
+  def initialize
+    config_file = '.crudconfig'
     config = if File.exist?(config_file)
                YAML.load_file(config_file)
-    else
-      {}
+             else
+               {}
              end
 
     @enabled = config.key?('enabled') ? config['enabled'] : true
