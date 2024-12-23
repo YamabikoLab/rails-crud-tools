@@ -2,11 +2,11 @@ class CrudConfig
   attr_accessor :enabled, :base_dir, :crud_file, :sql_log, :method_col, :action_col, :table_start_col, :header_bg_color
 
   def initialize(config_file)
-    if File.exist?(config_file)
-      config = YAML.load_file(config_file)
+    config = if File.exist?(config_file)
+               YAML.load_file(config_file)
     else
-      config = {}
-    end
+      {}
+             end
 
     @enabled = config.key?('enabled') ? config['enabled'] : true
     @base_dir = config['base_dir'] || 'doc'

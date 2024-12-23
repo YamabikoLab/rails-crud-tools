@@ -4,8 +4,21 @@ require "rubyXL/convenience_methods/color"
 require "rubyXL/convenience_methods/font"
 require "rubyXL/convenience_methods/workbook"
 require "rubyXL/convenience_methods/worksheet"
-require_relative "crud_config"
-require_relative "crud_notifications"
+require_relative "crud/crud_config"
+require_relative "crud/crud_notifications"
+require "crud/railtie"
+
+module Rails
+  module Crud
+    class Railtie < ::Rails::Railtie
+      initializer "rails-crud.add_after_action" do
+        ActiveSupport.on_load(:action_controller) do
+          include Rails::Crud::OperationsLogger
+        end
+      end
+    end
+  end
+end
 
 module Rails
   module Crud

@@ -11,8 +11,6 @@ module Rails
           end
         end
 
-        yield
-
         if $crud_config.enabled
           Thread.new do
             sheet = $workbook[0]
