@@ -8,6 +8,7 @@ module Rails
       def initialize
         @table_operations = {}
         @logs = []
+        @logger = Logger.new('log/crud.log')
       end
 
       def add_operation(table_name, operation)
@@ -21,12 +22,12 @@ module Rails
 
       def log_operations(logger)
         @logs.each do |log_entry|
-          logger.info log_entry
+          @logger.info log_entry
         end
 
         logger.info "\nSummary:"
         @table_operations.each do |table_name, operations|
-          logger.info "#{table_name} - #{operations.join(', ')}"
+          @logger.info "#{table_name} - #{operations.join(', ')}"
         end
       end
     end
