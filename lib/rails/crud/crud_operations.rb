@@ -1,30 +1,36 @@
-class CrudOperations
-  include Singleton
+module Rails
+  module Crud
+    class CrudOperations
+      class CrudOperations
+        include Singleton
 
-  attr_accessor :table_operations, :logs
+        attr_accessor :table_operations, :logs
 
-  def initialize
-    @table_operations = {}
-    @logs = []
-  end
+        def initialize
+          @table_operations = {}
+          @logs = []
+        end
 
-  def add_operation(table_name, operation)
-    @table_operations[table_name] ||= []
-    @table_operations[table_name] << operation unless @table_operations[table_name].include?(operation)
-  end
+        def add_operation(table_name, operation)
+          @table_operations[table_name] ||= []
+          @table_operations[table_name] << operation unless @table_operations[table_name].include?(operation)
+        end
 
-  def add_log(log_entry)
-    @logs << log_entry
-  end
+        def add_log(log_entry)
+          @logs << log_entry
+        end
 
-  def log_operations(logger)
-    @logs.each do |log_entry|
-      logger.info log_entry
-    end
+        def log_operations(logger)
+          @logs.each do |log_entry|
+            logger.info log_entry
+          end
 
-    logger.info "\nSummary:"
-    @table_operations.each do |table_name, operations|
-      logger.info "#{table_name} - #{operations.join(', ')}"
+          logger.info "\nSummary:"
+          @table_operations.each do |table_name, operations|
+            logger.info "#{table_name} - #{operations.join(', ')}"
+          end
+        end
+      end
     end
   end
 end
