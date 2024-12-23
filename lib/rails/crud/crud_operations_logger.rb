@@ -36,10 +36,10 @@ module Rails
 
               # CRUDの順序に並び替え
               crud_order = %w[C R U D]
-              sorted_value = merged_value.sort_by { |char| crud_order.index(char) }.join
+              sorted_value = crud_order & merged_value
 
               # 結合した値をセルに設定
-              sheet[row][col].change_contents(sorted_value)
+              sheet[row][col].change_contents(sorted_value.join)
             end
 
             # Excelファイルを書き込む
