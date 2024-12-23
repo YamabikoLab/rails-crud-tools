@@ -1,33 +1,84 @@
 # Rails::Crud
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rails/crud`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Welcome to Rails::Crud! This gem provides a tool to automatically update CRUD diagrams as you interact with your application. It simplifies logging and managing CRUD operations seamlessly within a Rails application.
 
 ## Installation
 
-Install the gem and add to the application's Gemfile by executing:
+Add the gem to the `development` group in your application's Gemfile by including the following lines:
 
-    $ bundle add rails-crud
+```ruby
+gem 'rails-crud', git: 'https://github.com/YamabikoLab/rails-crud', ref: 'fe995a3611afeed47a2b7a90245e3afb97c12dd9'
+gem 'rubyXL'
+```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+Then execute:
 
-    $ gem install rails-crud
+```sh
+$ bundle install
+```
+
+If you are not using Bundler, you can install the gem manually:
+
+```sh
+$ gem install rails-crud
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+### Setup
+
+Edit your `app/controllers/application_controller.rb` file to include the following changes:
+
+```ruby
+require 'rails/crud_operations_logger'
+
+class ApplicationController < ActionController::Base
+  include Rails::Crud::OperationsLogger
+
+  around_action :log_crud_operations
+end
+```
+
+### How It Works
+
+Once integrated, the gem automatically tracks CRUD operations (Create, Read, Update, Delete) performed in your application. The diagrams will update dynamically based on these operations, providing you with real-time insights into your application's data flow.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run the following command to execute the tests:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```sh
+$ rake spec
+```
+
+You can also use `bin/console` for an interactive prompt to experiment with the gem’s functionality.
+
+To install this gem onto your local machine for development purposes, run:
+
+```sh
+$ bundle exec rake install
+```
+
+To release a new version:
+1. Update the version number in `version.rb`.
+2. Run:
+
+```sh
+$ bundle exec rake release
+```
+
+This will create a git tag for the new version, push the git commits and tag, and upload the `.gem` file to [RubyGems](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rails-crud.
+Bug reports and pull requests are welcome on GitHub at [https://github.com/YamabikoLab/rails-crud](https://github.com/YamabikoLab/rails-crud).
+
+When contributing, please:
+- Fork the repository.
+- Create a feature branch.
+- Submit a pull request with a clear description of your changes.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
