@@ -26,7 +26,17 @@ $ gem install rails-crud
 ## Usage
 
 ### Setup
+To set up the configuration, create a .crudconfig file in the root directory of your project with the following content:
 
+```yaml
+enabled: true
+base_dir: doc
+crud_file: crud.xlsx
+method_col: Verb
+action_col: Controller#Action
+table_start_col: active_admin_comments
+header_bg_color: 00FFCC
+```
 
 ### How It Works
 
