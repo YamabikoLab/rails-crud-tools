@@ -10,7 +10,7 @@ module Rails
 
           # 全てのコントローラにafter_actionフィルタを追加
           ActionController::Base.class_eval do
-            after_action :log_crud_operations
+            around_action :log_crud_operations
           end
         end
       end

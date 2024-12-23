@@ -1,4 +1,5 @@
 require_relative "crud_config"
+require_relative 'crud_logger'
 
 module Rails
   module Crud
@@ -19,8 +20,7 @@ module Rails
             # CrudOperations インスタンスを使用して操作を追加
             CrudOperations.instance.add_operation(table_name, operation)
 
-            log_entry = "#{Time.now} - #{data[:name]} - #{data[:sql]}"
-            CrudOperations.instance.add_log(log_entry)
+            CrudLogger.logger.info("#{data[:name]} - #{data[:sql]}")
           end
         end
       end
