@@ -118,8 +118,6 @@ module Rails
     end
 
     # 初期化処理
-    def self.initialize_crud
-      self.load_crud_data
-    end
+    self.load_crud_data
   end
 end
