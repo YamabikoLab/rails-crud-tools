@@ -6,7 +6,7 @@ require "rubyXL/convenience_methods/workbook"
 require "rubyXL/convenience_methods/worksheet"
 require_relative "crud/crud_config"
 require_relative "crud/crud_notifications"
-require "crud/railtie"
+require_relative "crud/railtie"
 
 module Rails
   module Crud
