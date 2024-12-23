@@ -28,7 +28,6 @@ module Rails
               end
               # 既存の値を取得
               existing_value = sheet[row][col].value || ""
-              CrudLogger.logger.info "Existing value: #{existing_value}, Table: #{table_name}, Row: #{row}, Col: #{col}"
 
               # 新しい値と既存の値を結合し、重複を排除
               new_value = CrudOperations.instance.table_operations[table_name].join
@@ -36,10 +35,10 @@ module Rails
 
               # CRUDの順序に並び替え
               crud_order = %w[C R U D]
-              sorted_value = crud_order & merged_value
+              sorted_value = merged_value.sort_by { |char| crud_order.index(char) }.join
 
               # 結合した値をセルに設定
-              sheet[row][col].change_contents(sorted_value.join)
+              sheet[row][col].change_contents(sorted_value)
             end
 
             # Excelファイルを書き込む
