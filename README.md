@@ -27,17 +27,6 @@ $ gem install rails-crud
 
 ### Setup
 
-Edit your `app/controllers/application_controller.rb` file to include the following changes:
-
-```ruby
-require 'rails/crud_operations_logger'
-
-class ApplicationController < ActionController::Base
-  include Rails::Crud::OperationsLogger
-
-  around_action :log_crud_operations
-end
-```
 
 ### How It Works
 
