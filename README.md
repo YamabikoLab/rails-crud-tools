@@ -37,14 +37,14 @@ action_col: Controller#Action
 table_start_col: active_admin_comments
 header_bg_color: 00FFCC
 ```
-To generate the CRUD file, run the following Rake task:
 
-```sh
-$ rake crud:gen
-````
 ### How It Works
 
 Once integrated, the gem automatically tracks CRUD operations (Create, Read, Update, Delete) performed in your application. The diagrams will update dynamically based on these operations, providing you with real-time insights into your application's data flow.
+
+## Logs
+
+Please refer to the log file at `log/crud.log`.
 
 ## Development
 
