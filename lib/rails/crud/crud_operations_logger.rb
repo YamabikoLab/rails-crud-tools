@@ -12,14 +12,14 @@ module Rails
 
         yield
 
-        CrudOperations.instance.log_operations
-
-        table_operations_copy = CrudOperations.instance.table_operations.dup
-        method_copy = method.dup
-        controller_path_copy = controller_path.dup
-        action_name_copy = action_name.dup
-
         if CrudConfig.instance.enabled
+          CrudOperations.instance.log_operations
+
+          table_operations_copy = CrudOperations.instance.table_operations.dup
+          method_copy = method.dup
+          controller_path_copy = controller_path.dup
+          action_name_copy = action_name.dup
+
           Thread.new do
             sheet = CrudData.instance.workbook[0]
 
