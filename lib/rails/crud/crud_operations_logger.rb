@@ -29,7 +29,7 @@ module Rails
 
               # colまたはrowが存在しない場合にログ出力してスキップ
               unless row && col
-                Rails.logger.warn "Row or Column not found for table: #{table_name}, method: #{method_copy}, controller: #{controller_path_copy}, action: #{action_name_copy}, row: #{row}, col: #{col}"
+                CrudLogger.logger.warn "Row or Column not found for table: #{table_name}, method: #{method_copy}, controller: #{controller_path_copy}, action: #{action_name_copy}, row: #{row}, col: #{col}"
                 next
               end
 
