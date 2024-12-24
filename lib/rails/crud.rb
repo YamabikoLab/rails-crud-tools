@@ -9,6 +9,8 @@ require_relative "crud/crud_config"
 require_relative "crud/crud_notifications"
 require_relative "crud/railtie"
 require_relative "crud/crud_data"
+require 'active_support'
+require 'active_support/notifications'
 
 module Rails
   module Crud
