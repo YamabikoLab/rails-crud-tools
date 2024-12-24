@@ -24,7 +24,7 @@ module Rails
 
             # 全てのジョブにaround_performフィルタを追加
             ActiveJob::Base.class_eval do
-              around_perform :log_crud_operations
+              around_perform :log_crud_operations_for_job
             end
           end
         end

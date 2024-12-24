@@ -1,5 +1,7 @@
 require_relative 'crud_logger'
 
+# このクラスは、CRUDファイルからデータを読み込むためのクラスです。
+
 module Rails
   module Crud
     class CrudData
