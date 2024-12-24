@@ -1,9 +1,7 @@
 #!/usr/bin/env ruby
+require "rails/crud"
 
-require_relative '../config/environment'
-require 'rails/crud'
-
-if ARGV[0] == 'gen'
+if ARGV[0] == "gen"
   Rails::Crud.generate_crud_file
 else
   puts "Unknown command. Use 'gen' to generate CRUD file."
