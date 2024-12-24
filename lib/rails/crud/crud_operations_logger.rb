@@ -7,7 +7,7 @@ module Rails
         if CrudConfig.instance.enabled
           CrudOperations.instance.table_operations = {}
           method = request.request_method
-          CrudLogger.logger.info "Method: #{method}, Controller: #{controller_path}, Action: #{action_name}, Key: #{controller_path}##{action_name}"
+          CrudLogger.logger.info "***** Method: #{method}, Controller: #{controller_path}, Action: #{action_name}, Key: #{controller_path}##{action_name} *****"
         end
 
         yield
