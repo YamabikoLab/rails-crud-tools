@@ -7,7 +7,7 @@ Welcome to Rails::Crud! This gem provides a tool to automatically update CRUD di
 Add the gem to the `development` group in your application's Gemfile by including the following lines:
 
 ```ruby
-gem 'rails-crud', git: 'https://github.com/YamabikoLab/rails-crud', tag: 'v1.0.0'
+gem 'rails-crud', git: 'https://github.com/YamabikoLab/rails-crud', tag: 'v*.*.*'
 gem 'rubyXL'
 ```
 
