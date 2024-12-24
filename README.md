@@ -28,6 +28,7 @@ $ gem install rails-crud
 ### Setup
 To set up the configuration, create a .crudconfig file in the root directory of your project with the following content:
 
+.crudconfig
 ```yaml
 enabled: true
 base_dir: doc
