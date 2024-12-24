@@ -38,7 +38,7 @@ module Rails
           next if index == 0
 
           method = row[method_col_index]&.value
-          action = row[action_col_index]&.value
+          action = row[action_col_index]&.value&.split&.first
           next unless method && action
 
           @crud_rows[method] ||= {}
