@@ -10,11 +10,3 @@ require "rubocop/rake_task"
 RuboCop::RakeTask.new
 
 task default: %i[spec rubocop]
-
-namespace :crud do
-  desc "Generate CRUD file"
-  task :gen do
-    require_relative 'lib/rails/crud'
-    Rails::Crud.generate_crud_file
-  end
-end
