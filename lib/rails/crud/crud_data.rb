@@ -1,3 +1,5 @@
+require_relative 'crud_logger'
+
 module Rails
   module Crud
     class CrudData
@@ -15,7 +17,8 @@ module Rails
         return unless config.enabled
 
         unless File.exist?(config.crud_file_path)
-          raise "CRUD file not found: #{config.crud_file_path}"
+          CrudLogger.logger.warn "CRUD file not found: #{config.crud_file_path}"
+          return false
         end
 
         @workbook = RubyXL::Parser.parse(config.crud_file_path)
