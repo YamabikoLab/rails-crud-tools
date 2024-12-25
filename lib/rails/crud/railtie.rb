@@ -22,12 +22,7 @@ module Rails
           ActiveSupport.on_load(:active_job) do
             include Rails::Crud::OperationsLogger
 
-            # 全てのジョブにaround_performフィルタを追加
-            [ActiveJob::Base, ApplicationJob].each do |klass|
-              klass.class_eval do
-                around_perform :log_crud_operations_for_job
-              end
-            end
+            ActiveJob::Base.around_perform :log_crud_operations_for_job
           end
         end
       end
