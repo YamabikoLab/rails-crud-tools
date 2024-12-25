@@ -17,13 +17,6 @@ module Rails
           ActionController::API.class_eval do
             around_action :log_crud_operations
           end
-
-          # ActiveJobにもフィルタを追加
-          ActiveSupport.on_load(:active_job) do
-            include Rails::Crud::OperationsLogger
-
-            ActiveJob::Base.around_perform :log_crud_operations_for_job
-          end
         end
       end
     end
