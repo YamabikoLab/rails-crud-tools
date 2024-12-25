@@ -21,7 +21,10 @@ module Rails
               table_name = match_data[1]
               CrudOperations.instance.add_operation(table_name, operation)
 
-              CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
+              if CrudConfig.instance.sql_logging_enabled
+                # SQL ログを出力
+                CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
+              end
             else
               # テーブル名が見つからない場合は警告を出力
               CrudLogger.logger.warn "Table name not found in SQL: #{data[:sql]}"

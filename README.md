@@ -37,6 +37,7 @@ method_col: Verb
 action_col: Controller#Action
 table_start_col: active_admin_comments
 header_bg_color: 00FFCC
+sql_logging_enabled: true
 ```
 
 ### How It Works

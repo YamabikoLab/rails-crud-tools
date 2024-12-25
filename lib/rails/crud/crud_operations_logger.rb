@@ -13,7 +13,7 @@ module Rails
         yield
 
         if CrudConfig.instance.enabled
-          CrudOperations.instance.log_operations
+          CrudOperations.instance.log_operations(method, "#{controller_path}##{action_name}")
 
           table_operations_copy = CrudOperations.instance.table_operations.dup
           method_copy = method.dup
