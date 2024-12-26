@@ -15,13 +15,9 @@ module Rails
         yield
 
         if CrudConfig.instance.enabled
-          key = "#{controller_path}##{action_name}"
           CrudOperations.instance.log_operations(method, key)
-          table_operations_copy = CrudOperations.instance.table_operations.dup
-          method_copy = request.request_method.dup
-          key_copy = key.dup
-
-          log_and_write_operations(method_copy, key_copy, table_operations_copy)
+          key = "#{controller_path}##{action_name}"
+          log_and_write_operations(request.request_method, key)
         end
       end
 
@@ -35,10 +31,8 @@ module Rails
         yield
 
         if CrudConfig.instance.enabled
-          CrudOperations.instance.log_operations(method, self.class.name)
-          table_operations_copy = CrudOperations.instance.table_operations.dup
-          action_name_copy = self.class.name.dup
-          log_and_write_operations("", action_name_copy, table_operations_copy)
+          CrudOperations.instance.log_operations(method, key)
+          log_and_write_operations("", self.class.name)
         end
       end
 
@@ -61,25 +55,28 @@ module Rails
         CrudLogger.logger.info "******************** Job: #{job_name} ********************"
       end
 
-      # CRUD操作をログ出力し、Excelファイルに書き込む
-      def log_and_write_operations(method, key, table_operations)
+      # ExcelファイルにCRUD操作を書き込む
+      def log_and_write_operations(method, key)
+        table_operations_copy = CrudOperations.instance.table_operations.dup
+        method_copy = method.dup
+        key_copy = key.dup
 
         Thread.new do
           sheet = CrudData.instance.workbook[0]
 
-          table_operations.each_key do |table_name|
-            row = CrudData.instance.crud_rows[method][key]
+          table_operations_copy.each_key do |table_name|
+            row = CrudData.instance.crud_rows[method_copy][key_copy]
             col = CrudData.instance.crud_cols[table_name]
 
             # colまたはrowが存在しない場合にログ出力してスキップ
             unless row && col
-              CrudLogger.logger.warn "Row or Column not found for table: #{table_name}, method: #{method}, key: #{key}, row: #{row}, col: #{col}"
+              CrudLogger.logger.warn "Row or Column not found for table: #{table_name}, method: #{method_copy}, key: #{key_copy}, row: #{row}, col: #{col}"
               next
             end
 
             # 新しい値と既存の値を結合し、重複を排除
             existing_value = sheet[row][col].value || ""
-            new_value = table_operations[table_name].join
+            new_value = table_operations_copy[table_name].join
             merged_value = (existing_value.chars + new_value.chars).uniq
 
             # CRUDの順序に並び替え
@@ -93,6 +90,7 @@ module Rails
           CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
         end
       end
+
     end
   end
 end
