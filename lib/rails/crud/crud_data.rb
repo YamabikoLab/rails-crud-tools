@@ -1,4 +1,5 @@
 require_relative 'crud_logger'
+require_relative 'constants'
 
 # このクラスは、CRUDファイルからデータを読み込むためのクラスです。
 
@@ -43,6 +44,7 @@ module Rails
           next if index == 0
 
           method = row[method_col_index]&.value.to_s.strip
+          method = Constants::DEFAULT_METHOD if method.empty?
           action = row[action_col_index]&.value&.split&.first
           next if action.nil?
 

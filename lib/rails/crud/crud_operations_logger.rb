@@ -60,7 +60,7 @@ module Rails
       # ExcelファイルにCRUD操作を書き込む
       def log_and_write_operations(key, method = nil)
         table_operations_copy = CrudOperations.instance.table_operations.dup
-        method_copy = method.nil? ? "" : method.dup
+        method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
         key_copy = key.dup
 
         Thread.new do
