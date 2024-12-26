@@ -15,9 +15,10 @@ module Rails
         yield
 
         if CrudConfig.instance.enabled
-          CrudOperations.instance.log_operations(method, key)
           key = "#{controller_path}##{action_name}"
-          log_and_write_operations(request.request_method, key)
+          method = request.request_method
+          CrudOperations.instance.log_operations(key, method)
+          log_and_write_operations(key, method)
         end
       end
 
@@ -31,8 +32,9 @@ module Rails
         yield
 
         if CrudConfig.instance.enabled
-          CrudOperations.instance.log_operations(method, key)
-          log_and_write_operations("", self.class.name)
+          key = self.class.name
+          CrudOperations.instance.log_operations(key)
+          log_and_write_operations(key)
         end
       end
 
@@ -56,9 +58,9 @@ module Rails
       end
 
       # ExcelファイルにCRUD操作を書き込む
-      def log_and_write_operations(method, key)
+      def log_and_write_operations(key, method = nil)
         table_operations_copy = CrudOperations.instance.table_operations.dup
-        method_copy = method.dup
+        method_copy = method.nil? ? "" : method.dup
         key_copy = key.dup
 
         Thread.new do
