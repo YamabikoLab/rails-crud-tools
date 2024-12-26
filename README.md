@@ -48,6 +48,16 @@ Once integrated, the gem automatically tracks CRUD operations (Create, Read, Upd
 
 Please refer to the log file at `log/crud.log`.
 
+## CRUD Macro Workbook
+
+The `tools/crud_macro.xlsm` file is a macro-enabled workbook used for manipulating CRUD diagrams. This workbook contains macros that help in managing and visualizing CRUD operations within your application.
+
+### Download
+
+You can download the `crud_macro.xlsm` file from the following link:
+
+[Download crud_macro.xlsm](https://github.com/YamabikoLab/rails-crud/raw/main/tools/crud_macro.xlsm)
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run the following command to execute the tests:
