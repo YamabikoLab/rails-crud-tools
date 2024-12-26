@@ -42,9 +42,9 @@ module Rails
         sheet.each_with_index do |row, index|
           next if index == 0
 
-          method = row[method_col_index]&.value
+          method = row[method_col_index]&.value.to_s.strip
           action = row[action_col_index]&.value&.split&.first
-          next unless method && action
+          next if action.nil?
 
           @crud_rows[method] ||= {}
           @crud_rows[method][action] = index
