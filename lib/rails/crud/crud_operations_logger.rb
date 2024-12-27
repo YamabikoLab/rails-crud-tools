@@ -34,7 +34,7 @@ module Rails
         if CrudConfig.instance.enabled
           key = self.class.name
           CrudOperations.instance.log_operations(key)
-          log_and_write_operations(key)
+          log_and_write_operations(key, Constants::DEFAULT_METHOD)
         end
       end
 
@@ -58,9 +58,9 @@ module Rails
       end
 
       # ExcelファイルにCRUD操作を書き込む
-      def log_and_write_operations(key, method = nil)
+      def log_and_write_operations(key, method)
         table_operations_copy = CrudOperations.instance.table_operations.dup
-        method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
+        method_copy = method.dup
         key_copy = key.dup
 
         Thread.new do
