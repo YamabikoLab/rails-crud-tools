@@ -13,6 +13,7 @@ module Rails
       def initialize
         @crud_rows = {}
         @crud_cols = {}
+        @last_loaded_time = nil
       end
 
       def load_crud_data
@@ -25,6 +26,7 @@ module Rails
         end
 
         @workbook = RubyXL::Parser.parse(config.crud_file_path)
+        @last_loaded_time = File.mtime(config.crud_file_path)
         sheet = @workbook[0]
         headers = sheet[0].cells.map(&:value)
 
@@ -50,6 +52,25 @@ module Rails
 
           @crud_rows[method] ||= {}
           @crud_rows[method][action] = index
+        end
+      end
+
+      # CRUDデータが更新された場合に再読み込みする
+      def reload_if_needed
+        config = CrudConfig.instance
+        return unless config.enabled
+
+        if @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
+          CrudLogger.logger.info "Reloading CRUD data due to file modification."
+          # 同期メッセージを表示
+          `window.showSyncMessage()`
+
+          begin
+            load_crud_data
+          ensure
+            # 同期メッセージを非表示
+            `window.hideSyncMessage()`
+          end
         end
       end
     end

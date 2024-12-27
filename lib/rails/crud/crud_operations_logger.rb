@@ -25,17 +25,28 @@ module Rails
 
       # ジョブのCRUD操作をログ出力する
       def log_crud_operations_for_job
-        if CrudConfig.instance.enabled
-          initialize_crud_operations
-          log_job_details
-        end
+        begin
+          if CrudConfig.instance.enabled
+            initialize_crud_operations
+            log_job_details
 
-        yield
+            # ジョブ開始時にメッセージを表示
+            `window.showJobMessage()`
+          end
 
-        if CrudConfig.instance.enabled
-          key = self.class.name
-          CrudOperations.instance.log_operations(key)
-          log_and_write_operations(key)
+          yield
+
+          if CrudConfig.instance.enabled
+            key = self.class.name
+            CrudOperations.instance.log_operations(key)
+            log_and_write_operations(key)
+          end
+
+        ensure
+          if CrudConfig.instance.enabled
+            # ジョブ完了または例外発生時にメッセージを非表示
+            `window.hideJobMessage()`
+          end
         end
       end
 
@@ -60,13 +71,14 @@ module Rails
 
       # ExcelファイルにCRUD操作を書き込む
       def log_and_write_operations(key, method = nil)
+        CrudData.instance.reload_if_needed
+        sheet = CrudData.instance.workbook[0]
+
         table_operations_copy = CrudOperations.instance.table_operations.dup
         method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
         key_copy = key.dup
 
         Thread.new do
-          sheet = CrudData.instance.workbook[0]
-
           table_operations_copy.each_key do |table_name|
             row = CrudData.instance.crud_rows[method_copy][key_copy]
             col = CrudData.instance.crud_cols[table_name]
