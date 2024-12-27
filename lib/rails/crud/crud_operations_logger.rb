@@ -1,4 +1,5 @@
 require_relative 'crud_logger'
+require_relative 'constants'
 
 # ログ出力を行うモジュール
 module Rails
@@ -34,7 +35,7 @@ module Rails
         if CrudConfig.instance.enabled
           key = self.class.name
           CrudOperations.instance.log_operations(key)
-          log_and_write_operations(key, Constants::DEFAULT_METHOD)
+          log_and_write_operations(key)
         end
       end
 
@@ -58,9 +59,9 @@ module Rails
       end
 
       # ExcelファイルにCRUD操作を書き込む
-      def log_and_write_operations(key, method)
+      def log_and_write_operations(key, method = nil)
         table_operations_copy = CrudOperations.instance.table_operations.dup
-        method_copy = method.dup
+        method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
         key_copy = key.dup
 
         Thread.new do
