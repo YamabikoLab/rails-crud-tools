@@ -80,7 +80,8 @@ module Rails
             # sheet[row][col]がnilの場合に警告文を出力し、空文字列として処理を進める
             cell = sheet[row][col]
             if cell.nil?
-              CrudLogger.logger.warn "Cell not found at row: #{row}, col: #{col} for table: #{table_name}, method: #{method_copy}, key: #{key_copy}"
+              cell = sheet.add_cell(row, col, "")
+              CrudLogger.logger.warn "Cell not found at row: #{row}, col: #{col} for table: #{table_name}, method: #{method_copy}, key: #{key_copy}. Adding new cell."
               existing_value = ""
             else
               existing_value = cell.value || ""
@@ -94,7 +95,7 @@ module Rails
             crud_order = %w[C R U D]
             sorted_value = merged_value.sort_by { |char| crud_order.index(char) }.join
 
-            sheet[row][col].change_contents(sorted_value)
+            cell.change_contents(sorted_value)
           end
 
           # Excelファイルを書き込む
