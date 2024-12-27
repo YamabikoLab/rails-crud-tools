@@ -77,8 +77,16 @@ module Rails
               next
             end
 
+            # sheet[row][col]がnilの場合に警告文を出力し、空文字列として処理を進める
+            cell = sheet[row][col]
+            if cell.nil?
+              CrudLogger.logger.warn "Cell not found at row: #{row}, col: #{col} for table: #{table_name}, method: #{method_copy}, key: #{key_copy}"
+              existing_value = ""
+            else
+              existing_value = cell.value || ""
+            end
+
             # 新しい値と既存の値を結合し、重複を排除
-            existing_value = sheet[row][col].value || ""
             new_value = table_operations_copy[table_name].join
             merged_value = (existing_value.chars + new_value.chars).uniq
 
