@@ -61,7 +61,7 @@ module Rails
         return unless config.enabled
 
         if @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
-          CrudLogger.logger.info "Reloading CRUD data due to file modification."
+          CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
           # 同期メッセージを表示
           `window.showSyncMessage()`
 

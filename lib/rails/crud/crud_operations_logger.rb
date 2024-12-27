@@ -112,8 +112,10 @@ module Rails
 
           # Excelファイルを書き込む
           CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
+          timestamp = File.mtime(CrudConfig.instance.crud_file_path)
+          CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
           # タイムスタンプを更新する
-          CrudData.instance.instance_variable_set(:@last_loaded_time, File.mtime(config.crud_file_path))
+          CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
         end
       end
 
