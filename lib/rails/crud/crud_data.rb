@@ -63,13 +63,13 @@ module Rails
         if @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
           CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
           # 同期メッセージを表示
-          `showCrudFileSyncMessage()`
+          `showCrudFileReloadMessage()`
 
           begin
             load_crud_data
           ensure
             # 同期メッセージを非表示
-            `hideCrudFileSyncMessage()`
+            `hideCrudFileReloadMessage()`
           end
         end
       end

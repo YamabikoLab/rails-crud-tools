@@ -31,7 +31,7 @@ module Rails
             log_job_details
 
             # ジョブ開始時にメッセージを表示
-            `window.showJobMessage()`
+            `showJobMessage()`
           end
 
           yield
@@ -45,7 +45,7 @@ module Rails
         ensure
           if CrudConfig.instance.enabled
             # ジョブ完了または例外発生時にメッセージを非表示
-            `window.hideJobMessage()`
+            `hideJobMessage()`
           end
         end
       end
