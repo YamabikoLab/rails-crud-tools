@@ -65,12 +65,7 @@ module Rails
           # 同期メッセージを表示
           `showCrudFileReloadMessage()`
 
-          begin
-            load_crud_data
-          ensure
-            # 同期メッセージを非表示
-            `hideCrudFileReloadMessage()`
-          end
+          load_crud_data
         end
       end
     end

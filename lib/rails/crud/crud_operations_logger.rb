@@ -25,28 +25,20 @@ module Rails
 
       # ジョブのCRUD操作をログ出力する
       def log_crud_operations_for_job
-        begin
-          if CrudConfig.instance.enabled
-            initialize_crud_operations
-            log_job_details
+        if CrudConfig.instance.enabled
+          initialize_crud_operations
+          log_job_details
 
-            # ジョブ開始時にメッセージを表示
-            `showJobMessage()`
-          end
+          # ジョブ開始時にメッセージを表示
+          `showJobMessage()`
+        end
 
-          yield
+        yield
 
-          if CrudConfig.instance.enabled
-            key = self.class.name
-            CrudOperations.instance.log_operations(key)
-            log_and_write_operations(key)
-          end
-
-        ensure
-          if CrudConfig.instance.enabled
-            # ジョブ完了または例外発生時にメッセージを非表示
-            `hideJobMessage()`
-          end
+        if CrudConfig.instance.enabled
+          key = self.class.name
+          CrudOperations.instance.log_operations(key)
+          log_and_write_operations(key)
         end
       end
 
