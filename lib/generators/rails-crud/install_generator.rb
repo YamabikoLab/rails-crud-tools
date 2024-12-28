@@ -1,10 +1,10 @@
-module RailsCrud
-  module Generators
+module Rails
+  module Crud
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path('templates', __dir__)
 
       def copy_javascript
-        copy_file 'rails-crud.js', 'app/assets/javascripts/rails_crud.js'
+        copy_file 'rails_crud.js', 'app/assets/javascripts/rails_crud.js'
       end
 
       def add_javascript_include_tag
