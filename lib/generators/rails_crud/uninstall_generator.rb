@@ -11,8 +11,19 @@ module RailsCrud
         gsub_file 'app/views/layouts/application.html.erb', /\n    <%= javascript_include_tag 'rails_crud' %>\n/, ''
       end
 
+      def remove_javascript_require
+        gsub_file 'app/assets/javascripts/application.js', %r{\n//= require rails_crud\n}, ''
+      end
+
       def show_uninstall_message
         puts "Rails CRUD has been successfully uninstalled!"
+      end
+
+      def remove
+        remove_javascript
+        remove_javascript_include_tag
+        remove_javascript_require
+        show_uninstall_message
       end
     end
   end
