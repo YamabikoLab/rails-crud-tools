@@ -1,4 +1,4 @@
-module RailsCrudCrud
+module RailsCrud
   module Generators
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path('templates', __dir__)
@@ -23,7 +23,6 @@ module RailsCrudCrud
         puts "Rails CRUD has been successfully installed!"
       end
 
-      # メソッドの呼び出し順序を定義
       def install
         copy_javascript
         add_javascript_include_tag
