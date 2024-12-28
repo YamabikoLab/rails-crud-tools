@@ -28,9 +28,6 @@ module Rails
         if CrudConfig.instance.enabled
           initialize_crud_operations
           log_job_details
-
-          # ジョブ開始時にメッセージを表示
-          `showJobMessage()`
         end
 
         yield
