@@ -117,6 +117,7 @@ module RailsCrud
       private
 
       def load_application
+        path = Dir.pwd
         $stderr.puts "Loading application in '#{File.basename(path)}'..."
         environment_path = "#{path}/config/environment.rb"
         require environment_path
