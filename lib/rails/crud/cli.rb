@@ -1,11 +1,17 @@
 require "rubyXL"
 require 'rubyXL/convenience_methods'
 require 'active_record'
+require 'yaml'
+require 'erb'
 
 module RailsCrud
   class CLI
     class << self
       def gen
+        # データベース接続の初期化
+        db_config = YAML.load(ERB.new(File.read('config/database.yml')).result)
+        ActiveRecord::Base.establish_connection(db_config['development'])
+
         # 1. `bundle exec rails routes --expanded`の結果を取得
         routes_output = `bundle exec rails routes --expanded`
         font_name = "MS Pゴシック"
