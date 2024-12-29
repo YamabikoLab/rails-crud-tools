@@ -67,7 +67,7 @@ module Rails
         method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
         key_copy = key.dup
 
-        Thread.new do
+        # Thread.new do
           table_operations_copy.each_key do |table_name|
             row = CrudData.instance.crud_rows[method_copy][key_copy]
             col = CrudData.instance.crud_cols[table_name]
@@ -105,9 +105,8 @@ module Rails
           CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
           # タイムスタンプを更新する
           CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
-        end
+        # end
       end
-
     end
   end
 end
