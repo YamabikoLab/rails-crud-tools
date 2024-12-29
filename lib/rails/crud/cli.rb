@@ -1,3 +1,4 @@
+require "rubyXL"
 require 'rubyXL/convenience_methods'
 
 module RailsCrud
