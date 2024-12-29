@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require_relative "rails/crud/cli"
+
+RailsCrud::CLI.start
