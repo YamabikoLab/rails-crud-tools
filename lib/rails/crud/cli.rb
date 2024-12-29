@@ -8,6 +8,8 @@ module RailsCrud
   class CLI
     class << self
       def gen
+        load_application
+
         # 1. `bundle exec rails routes --expanded`の結果を取得
         routes_output = `bundle exec rails routes --expanded`
         font_name = "MS Pゴシック"
@@ -29,7 +31,6 @@ module RailsCrud
         routes_data << current_route unless current_route.empty?
 
         # 3. 全テーブル名を取得し、アルファベット順にソート
-        ActiveRecord::Base.establish_connection
         table_names = ActiveRecord::Base.connection.tables.sort
 
         # 4. `rubyXL`を使って`xlsx`ファイルに書き込み
@@ -114,6 +115,23 @@ module RailsCrud
       end
 
       private
+
+      def load_application
+        $stderr.puts "Loading application in '#{File.basename(path)}'..."
+        environment_path = "#{path}/config/environment.rb"
+        require environment_path
+
+        if defined? Rails
+          Rails.application.eager_load!
+          Rails.application.config.eager_load_namespaces.each(&:eager_load!) if Rails.application.config.respond_to?(:eager_load_namespaces)
+        end
+      rescue ::LoadError
+        error_message = <<~EOS
+          Tried to load your application environment from '#{environment_path}'.
+        EOS
+        puts error_message
+      rescue TypeError
+      end
 
       def apply_borders(cell)
         %i[top bottom left right].each do |side|
