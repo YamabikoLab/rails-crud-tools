@@ -1,5 +1,6 @@
 require "rubyXL"
 require 'rubyXL/convenience_methods'
+require 'active_record'
 
 module RailsCrud
   class CLI
