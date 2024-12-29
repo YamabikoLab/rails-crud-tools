@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require "rails/crud/cli"
 
-RailsCrud::CLI.start
+RailsCrud::CLI.gen
