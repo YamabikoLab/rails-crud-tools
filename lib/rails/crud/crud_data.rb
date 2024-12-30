@@ -1,4 +1,5 @@
 require_relative 'crud_logger'
+require_relative 'constants'
 
 # このクラスは、CRUDファイルからデータを読み込むためのクラスです。
 
@@ -12,6 +13,7 @@ module Rails
       def initialize
         @crud_rows = {}
         @crud_cols = {}
+        @last_loaded_time = nil
       end
 
       def load_crud_data
@@ -24,6 +26,7 @@ module Rails
         end
 
         @workbook = RubyXL::Parser.parse(config.crud_file_path)
+        @last_loaded_time = File.mtime(config.crud_file_path)
         sheet = @workbook[0]
         headers = sheet[0].cells.map(&:value)
 
@@ -42,12 +45,24 @@ module Rails
         sheet.each_with_index do |row, index|
           next if index == 0
 
-          method = row[method_col_index]&.value
+          method = row[method_col_index]&.value.to_s.strip
+          method = Constants::DEFAULT_METHOD if method.empty?
           action = row[action_col_index]&.value&.split&.first
-          next unless method && action
+          next if action.nil?
 
           @crud_rows[method] ||= {}
           @crud_rows[method][action] = index
+        end
+      end
+
+      # CRUDデータが更新された場合に再読み込みする
+      def reload_if_needed
+        config = CrudConfig.instance
+        return unless config.enabled
+
+        if @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
+          CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
+          load_crud_data
         end
       end
     end

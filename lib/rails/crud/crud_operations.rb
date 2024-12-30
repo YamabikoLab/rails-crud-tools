@@ -16,9 +16,13 @@ module Rails
         @table_operations[table_name] << operation unless @table_operations[table_name].include?(operation)
       end
 
-      def log_operations(method, key)
-        CrudLogger.logger.info "\nSummary:"
-        CrudLogger.logger.info "Method: #{method}, Key: #{key}"
+      def log_operations(key, method = nil)
+        if method
+          CrudLogger.logger.info "\nSummary: Method: #{method}, Key: #{key}"
+        else
+          CrudLogger.logger.info "\nSummary: Key: #{key}"
+        end
+
         @table_operations.each do |table_name, operations|
           CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
         end

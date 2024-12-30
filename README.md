@@ -8,7 +8,6 @@ Add the gem to the `development` group in your application's Gemfile by includin
 
 ```ruby
 gem 'rails-crud', git: 'https://github.com/YamabikoLab/rails-crud', tag: 'v*.*.*'
-gem 'rubyXL'
 ```
 
 Then execute:
@@ -38,6 +37,14 @@ action_col: Controller#Action
 table_start_col: active_admin_comments
 header_bg_color: 00FFCC
 sql_logging_enabled: true
+```
+
+### Generate CRUD Diagram
+
+To generate the CRUD diagram file, run the following command:
+
+```sh
+$ bundle exec crud gen
 ```
 
 ### How It Works

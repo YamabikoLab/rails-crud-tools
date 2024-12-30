@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+require "rails/crud/cli"
+
+def display_help
+  puts <<-HELP
+Usage: crud [command]
+
+Commands:
+  gen     Generate CRUD operations
+  help    Display this help message
+  HELP
+end
+
+if ARGV.empty? || ARGV.include?("help")
+  display_help
+elsif ARGV.include?("gen")
+  RailsCrud::CLI.gen
+else
+  puts "Unknown command: #{ARGV.join(' ')}"
+  display_help
+end
