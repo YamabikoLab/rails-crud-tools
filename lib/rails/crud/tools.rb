@@ -4,7 +4,7 @@ require "rubyXL/convenience_methods/color"
 require "rubyXL/convenience_methods/font"
 require "rubyXL/convenience_methods/workbook"
 require "rubyXL/convenience_methods/worksheet"
-require 'rails/crud/crud_operations'
+require_relative 'tools/crud_operations'
 require_relative "tools/config"
 require_relative "tools/cations"
 require_relative "tools/ie"

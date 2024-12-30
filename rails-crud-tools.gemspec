@@ -4,7 +4,7 @@ require_relative "./lib/rails/crud/tools/version"
 
 Gem::Specification.new do |spec|
   spec.name = "rails-crud-tools"
-  spec.version = Rails::Crud::VERSION
+  spec.version = Rails::Crud::Tools::VERSION
   spec.authors = ["yhijikata"]
   spec.email = ["yhijikata@systemlancer.com"]
 
