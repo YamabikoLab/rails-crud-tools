@@ -1,10 +1,12 @@
+# lib/rails/crud/crud_operations_logger.rb
 require_relative 'crud_logger'
 require_relative 'constants'
 
 module Rails
   module Crud
     class OperationsLogger
-      def initialize(logger: CrudLogger.logger, config: CrudConfig.instance, data: CrudData.instance)
+      def initialize(request:, logger: CrudLogger.logger, config: CrudConfig.instance, data: CrudData.instance)
+        @request = request
         @logger = logger
         @config = config
         @data = data
@@ -19,8 +21,8 @@ module Rails
         yield
 
         if @config.enabled
-          key = "#{controller_path}##{action_name}"
-          method = request.request_method
+          key = "#{@request.controller_path}##{@request.action_name}"
+          method = @request.request_method
           CrudOperations.instance.log_operations(key, method)
           log_and_write_operations(key, method)
         end
@@ -48,8 +50,8 @@ module Rails
       end
 
       def log_request_details
-        method = request.request_method
-        @logger.info "******************** Method: #{method}, Controller: #{controller_path}, Action: #{action_name}, Key: #{controller_path}##{action_name} ********************"
+        method = @request.request_method
+        @logger.info "******************** Method: #{method}, Controller: #{@request.controller_path}, Action: #{@request.action_name}, Key: #{@request.controller_path}##{@request.action_name} ********************"
       end
 
       def log_job_details
