@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "./lib/rails/crud/ols/version"
+require_relative "./lib/rails/crud/tools/version"
 
 Gem::Specification.new do |spec|
   spec.name = "rails-crud-tools"
