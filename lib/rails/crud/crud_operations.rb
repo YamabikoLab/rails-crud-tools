@@ -7,8 +7,9 @@ module Rails
 
       attr_accessor :table_operations, :logs
 
-      def initialize
+      def initialize(logger: CrudLogger.logger)
         @table_operations = {}
+        @logger = logger
       end
 
       def add_operation(table_name, operation)
@@ -17,14 +18,23 @@ module Rails
       end
 
       def log_operations(key, method = nil)
-        if method
-          CrudLogger.logger.info "\nSummary: Method: #{method}, Key: #{key}"
-        else
-          CrudLogger.logger.info "\nSummary: Key: #{key}"
-        end
+        log_summary(key, method)
+        log_table_operations
+      end
 
+      private
+
+      def log_summary(key, method)
+        if method
+          @logger.info "\nSummary: Method: #{method}, Key: #{key}"
+        else
+          @logger.info "\nSummary: Key: #{key}"
+        end
+      end
+
+      def log_table_operations
         @table_operations.each do |table_name, operations|
-          CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
+          @logger.info "#{table_name} - #{operations.join(', ')}"
         end
       end
     end
