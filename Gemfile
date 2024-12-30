@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in rails-crud.gemspec
+# Specify your gem's dependencies in rails-crud-tools.gemspec
 gemspec
 
 gem "rake", "~> 13.0"

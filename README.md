@@ -1,13 +1,13 @@
-# Rails::Crud
+# Rails::Crud Tools
 
-Welcome to Rails::Crud! This gem provides a tool to automatically update CRUD diagrams as you interact with your application. It simplifies logging and managing CRUD operations seamlessly within a Rails application.
+Welcome to Rails::Crud Tools! This gem provides a tool to automatically update CRUD diagrams as you interact with your application. It simplifies logging and managing CRUD operations seamlessly within a Rails application.
 
 ## Installation
 
 Add the gem to the `development` group in your application's Gemfile by including the following lines:
 
 ```ruby
-gem 'rails-crud', git: 'https://github.com/YamabikoLab/rails-crud', tag: 'v*.*.*'
+gem 'rails-crud-tools', git: 'https://github.com/YamabikoLab/rails-crud-tools', tag: 'v*.*.*'
 ```
 
 Then execute:
@@ -19,7 +19,7 @@ $ bundle install
 If you are not using Bundler, you can install the gem manually:
 
 ```sh
-$ gem install rails-crud
+$ gem install rails-crud-tools
 ```
 
 ## Usage

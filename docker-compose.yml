@@ -2,7 +2,7 @@ version: '3.8'
 services:
   app:
     build: .
-    container_name: rails-crud
+    container_name: rails-crud-tools
     volumes:
       - .:/root/app
       - /root/app/ide
