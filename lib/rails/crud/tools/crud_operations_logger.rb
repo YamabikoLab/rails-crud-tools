@@ -13,6 +13,7 @@ module Rails
             initialize_crud_operations
             log_request_details
             # Thread.current[:request] = request
+            CrudLogger.logger.debug "Request: #{Thread.current[:request]}"
           end
 
           yield
