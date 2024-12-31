@@ -12,6 +12,7 @@ module Rails
           if CrudConfig.instance.enabled
             initialize_crud_operations
             log_request_details
+            Thread.current[:request] = request
           end
 
           yield
@@ -22,6 +23,8 @@ module Rails
             CrudOperations.instance.log_operations(key, method)
             log_and_write_operations(key, method)
           end
+        ensure
+          Thread.current[:request] = nil
         end
 
         # ジョブのCRUD操作をログ出力する
@@ -29,15 +32,18 @@ module Rails
           if CrudConfig.instance.enabled
             initialize_crud_operations
             log_job_details
+            key = self.class.name
+            Thread.current[:sidekiq_job_class] = key
           end
 
           yield
 
           if CrudConfig.instance.enabled
-            key = self.class.name
             CrudOperations.instance.log_operations(key)
             log_and_write_operations(key)
           end
+        ensure
+          Thread.current[:sidekiq_job_class] = nil
         end
 
         private
