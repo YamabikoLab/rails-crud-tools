@@ -10,6 +10,7 @@ module Rails
         attr_accessor :table_operations, :logs
 
         def initialize
+          CrudLogger.logger.debug "Initializing CrudOperations"
           @table_operations = Hash.new { |hash, key| hash[key] = Hash.new { |h, k| h[k] = Hash.new { |hh, kk| hh[kk] = [] } } }
           CrudLogger.logger.debug "Initialized @table_operations with default values"
         end
