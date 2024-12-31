@@ -41,8 +41,10 @@ module Rails
             CrudLogger.logger.info "\nSummary: Key: #{key}"
           end
 
-          @table_operations[method][key]&.each do |table_name, operations|
-            CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
+          if @table_operations && @table_operations[method]
+            @table_operations[method][key]&.each do |table_name, operations|
+              CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
+            end
           end
         end
       end
