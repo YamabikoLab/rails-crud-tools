@@ -20,8 +20,10 @@ module Rails
           if CrudConfig.instance.enabled
             key = "#{controller_path}##{action_name}"
             method = request.request_method
-            CrudOperations.instance.log_operations(key, method)
-            log_and_write_operations(key, method)
+            if CrudOperations.instance.table_operations_present?(method, key)
+              CrudOperations.instance.log_operations(key, method)
+              log_and_write_operations(key, method)
+            end
           end
         ensure
           Thread.current[:request] = nil
@@ -39,8 +41,10 @@ module Rails
           yield
 
           if CrudConfig.instance.enabled
-            CrudOperations.instance.log_operations(key)
-            log_and_write_operations(key)
+            if CrudOperations.instance.table_operations_present?(Constants::DEFAULT_METHOD, key)
+              CrudOperations.instance.log_operations(key)
+              log_and_write_operations(key)
+            end
           end
         ensure
           Thread.current[:sidekiq_job_class] = nil
