@@ -71,7 +71,7 @@ module Rails
           method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
           key_copy = key.dup
 
-          table_operations_copy.each_key do |table_name|
+          table_operations_copy[method_copy][key_copy].each_key do |table_name|
             row = CrudData.instance.crud_rows[method_copy][key_copy]
             col = CrudData.instance.crud_cols[table_name]
 
