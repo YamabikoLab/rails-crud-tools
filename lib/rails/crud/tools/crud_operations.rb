@@ -10,7 +10,7 @@ module Rails
         attr_accessor :table_operations, :logs
 
         def initialize
-          @table_operations = {}
+          @table_operations = Hash.new { |hash, key| hash[key] = Hash.new { |h, k| h[k] = Hash.new { |hh, kk| hh[kk] = [] } } }
         end
 
         def add_operation(table_name, operation)
@@ -28,9 +28,6 @@ module Rails
             return
           end
 
-          @table_operations[method] ||= {}
-          @table_operations[method][key] ||= {}
-          @table_operations[method][key][table_name] ||= []
           @table_operations[method][key][table_name] << operation unless @table_operations[method][key][table_name].include?(operation)
         end
 
@@ -41,10 +38,8 @@ module Rails
             CrudLogger.logger.info "\nSummary: Key: #{key}"
           end
 
-          if @table_operations && @table_operations[method]
-            @table_operations[method][key]&.each do |table_name, operations|
-              CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
-            end
+          @table_operations[method][key].each do |table_name, operations|
+            CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
           end
         end
       end
