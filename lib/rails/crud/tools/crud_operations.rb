@@ -44,11 +44,12 @@ module Rails
           @table_operations[method][key][table_name] << operation unless @table_operations[method][key][table_name].include?(operation)
         end
 
-        def log_operations(key, method = nil)
+        def log_operations(key, method)
           if method
             CrudLogger.logger.info "\nSummary: Method: #{method}, Key: #{key}"
           else
             CrudLogger.logger.info "\nSummary: Key: #{key}"
+            method = Constants::DEFAULT_METHOD
           end
 
           @table_operations[method][key].each do |table_name, operations|
