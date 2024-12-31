@@ -2,6 +2,8 @@
 
 module Rails
   module Crud
-    VERSION = "0.1.0"
+    module Tools
+      VERSION = "0.1.0"
+    end
   end
 end
