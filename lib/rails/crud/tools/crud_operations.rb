@@ -11,6 +11,7 @@ module Rails
 
         def initialize
           @table_operations = Hash.new { |hash, key| hash[key] = Hash.new { |h, k| h[k] = Hash.new { |hh, kk| hh[kk] = [] } } }
+          CrudLogger.logger.debug "Initialized @table_operations with default values"
         end
 
         def add_operation(table_name, operation)
