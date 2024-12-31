@@ -1,6 +1,6 @@
-# Rails::Crud Tools
+# Rails::Crud::Tools
 
-Welcome to Rails::Crud Tools! This gem provides a tool to automatically update CRUD diagrams as you interact with your application. It simplifies logging and managing CRUD operations seamlessly within a Rails application.
+Welcome to Rails::Crud::Tools! This gem provides a tool to automatically update CRUD diagrams as you interact with your application. It simplifies logging and managing CRUD operations seamlessly within a Rails application.
 
 ## Installation
 
