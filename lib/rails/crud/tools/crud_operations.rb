@@ -40,7 +40,17 @@ module Rails
             CrudLogger.logger.info "\nSummary: Key: #{key}"
           end
 
-          @table_operations[method][key]&.each do |table_name, operations|
+          if @table_operations[method].nil?
+            CrudLogger.logger.error "Method #{method} does not exist in @table_operations"
+            return
+          end
+
+          if @table_operations[method][key].nil?
+            CrudLogger.logger.error "Key #{key} does not exist for method #{method} in @table_operations"
+            return
+          end
+
+          @table_operations[method][key].each do |table_name, operations|
             CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
           end
         end
