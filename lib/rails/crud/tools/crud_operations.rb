@@ -34,6 +34,13 @@ module Rails
             return
           end
 
+          # @table_operations[method]が存在しない場合は初期化
+          @table_operations[method] ||= {}
+          # @table_operations[method][key]が存在しない場合は初期化
+          @table_operations[method][key] ||= {}
+          # @table_operations[method][key][table_name]が存在しない場合は初期化
+          @table_operations[method][key][table_name] ||= []
+
           @table_operations[method][key][table_name] << operation unless @table_operations[method][key][table_name].include?(operation)
         end
 
