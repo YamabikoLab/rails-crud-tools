@@ -10,7 +10,6 @@ module Rails
         # コントローラのCRUD操作をログ出力する
         def log_crud_operations
           if CrudConfig.instance.enabled
-            initialize_crud_operations
             log_request_details
             Thread.current[:crud_request] = request
           end
@@ -32,7 +31,6 @@ module Rails
         # ジョブのCRUD操作をログ出力する
         def log_crud_operations_for_job
           if CrudConfig.instance.enabled
-            initialize_crud_operations
             log_job_details
             key = self.class.name
             Thread.current[:crud_sidekiq_job_class] = key
@@ -51,11 +49,6 @@ module Rails
         end
 
         private
-
-        # CRUD操作を初期化する
-        def initialize_crud_operations
-          CrudOperations.instance.table_operations = {}
-        end
 
         # リクエストの詳細をログ出力する
         def log_request_details
