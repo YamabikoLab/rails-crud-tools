@@ -67,11 +67,12 @@ module Rails
           CrudData.instance.reload_if_needed
           sheet = CrudData.instance.workbook[0]
 
-          table_operations_copy = CrudOperations.instance.table_operations[method][key].dup
+
           method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
           key_copy = key.dup
+          table_operations_copy = CrudOperations.instance.table_operations[method_copy][key_copy].dup
 
-          table_operations_copy[method_copy][key_copy].each_key do |table_name|
+          table_operations_copy.each_key do |table_name|
             row = CrudData.instance.crud_rows[method_copy][key_copy]
             col = CrudData.instance.crud_cols[table_name]
 
