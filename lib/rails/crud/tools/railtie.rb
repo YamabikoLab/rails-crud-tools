@@ -7,7 +7,7 @@ module Rails
       class Railtie < ::Rails::Railtie
         initializer 'rails-crud.add_after_action' do
           ActiveSupport.on_load(:action_controller) do
-            include Rails::Crud::OperationsLogger
+            include Rails::Crud::Tools::OperationsLogger
 
             # 全てのコントローラにafter_actionフィルタを追加
             ActionController::Base.class_eval do
@@ -22,7 +22,7 @@ module Rails
 
           # ActiveJobにもフィルタを追加
           ActiveSupport.on_load(:active_job) do
-            include Rails::Crud::OperationsLogger
+            include Rails::Crud::Tools::OperationsLogger
 
             # 全てのジョブにaround_performフィルタを追加
             ActiveJob::Base.class_eval do
