@@ -19,7 +19,7 @@ module Rails
           end
         end
 
-        def add_operation(method, key table_name, operation)
+        def add_operation(method, key, table_name, operation)
           # @table_operations[method]が存在しない場合は初期化
           @table_operations[method] ||= {}
           # @table_operations[method][key]が存在しない場合は初期化
