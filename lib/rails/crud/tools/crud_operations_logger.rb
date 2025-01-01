@@ -68,7 +68,7 @@ module Rails
           sheet = CrudData.instance.workbook[0]
 
 
-          table_operations[method][key].each_key do |table_name|
+          CrudOperations.instance.table_operations[method][key].each_key do |table_name|
             row = CrudData.instance.crud_rows[method][key]
             col = CrudData.instance.crud_cols[table_name]
 
@@ -89,7 +89,7 @@ module Rails
             end
 
             # 新しい値と既存の値を結合し、重複を排除
-            new_value = table_operations[method][key][table_name].join
+            new_value = CrudOperations.instance.table_operations[method][key][table_name].join
             merged_value = (existing_value.chars + new_value.chars).uniq
 
             # CRUDの順序に並び替え
