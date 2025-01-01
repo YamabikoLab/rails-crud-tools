@@ -19,21 +19,7 @@ module Rails
           end
         end
 
-        def add_operation(table_name, operation)
-          request = Thread.current[:crud_request]
-          if request
-            method = request.request_method
-            controller = request.params['controller']
-            action = request.params['action']
-            key = "#{controller}##{action}"
-          elsif Thread.current[:crud_sidekiq_job_class]
-            key = Thread.current[:crud_sidekiq_job_class]
-            method = Constants::DEFAULT_METHOD
-          else
-            CrudLogger.logger.warn "Unknown method and key detected"
-            return
-          end
-
+        def add_operation(method, key table_name, operation)
           # @table_operations[method]が存在しない場合は初期化
           @table_operations[method] ||= {}
           # @table_operations[method][key]が存在しない場合は初期化

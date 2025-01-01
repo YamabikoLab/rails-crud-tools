@@ -22,7 +22,22 @@ module Rails
               if match_data
                 # テーブル名を取得して CRUD 操作に追加
                 table_name = match_data[1]
-                CrudOperations.instance.add_operation(table_name, operation)
+
+                request = Thread.current[:crud_request]
+                if request
+                  method = request.request_method
+                  controller = request.params['controller']
+                  action = request.params['action']
+                  key = "#{controller}##{action}"
+                elsif Thread.current[:crud_sidekiq_job_class]
+                  key = Thread.current[:crud_sidekiq_job_class]
+                  method = Constants::DEFAULT_METHOD
+                else
+                  CrudLogger.logger.warn "Unknown method and key detected"
+                  return
+                end
+
+                CrudOperations.instance.add_operation(method, key, table_name, operation)
 
                 if CrudConfig.instance.sql_logging_enabled
                   # SQL ログを出力
