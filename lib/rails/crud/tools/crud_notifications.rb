@@ -1,3 +1,5 @@
+require 'active_support/notifications'
+
 # Notification を使用して SQL クエリを監視するためのモジュール
 module Rails
   module Crud

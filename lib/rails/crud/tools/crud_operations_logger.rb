@@ -10,8 +10,8 @@ module Rails
         # コントローラのCRUD操作をログ出力する
         def log_crud_operations
           if CrudConfig.instance.enabled
-            initialize_crud_operations
             log_request_details
+            Thread.current[:crud_request] = request
           end
 
           yield
@@ -19,33 +19,36 @@ module Rails
           if CrudConfig.instance.enabled
             key = "#{controller_path}##{action_name}"
             method = request.request_method
-            CrudOperations.instance.log_operations(key, method)
-            log_and_write_operations(key, method)
+            if CrudOperations.instance.table_operations_present?(method, key)
+              CrudOperations.instance.log_operations(method, key)
+              log_and_write_operations(method, key)
+            end
           end
+        ensure
+          Thread.current[:crud_request] = nil
         end
 
         # ジョブのCRUD操作をログ出力する
         def log_crud_operations_for_job
           if CrudConfig.instance.enabled
-            initialize_crud_operations
             log_job_details
+            key = self.class.name
+            Thread.current[:crud_sidekiq_job_class] = key
           end
 
           yield
 
           if CrudConfig.instance.enabled
-            key = self.class.name
-            CrudOperations.instance.log_operations(key)
-            log_and_write_operations(key)
+            if CrudOperations.instance.table_operations_present?(Constants::DEFAULT_METHOD, key)
+              CrudOperations.instance.log_operations(Constants::DEFAULT_METHOD, key)
+              log_and_write_operations(Constants::DEFAULT_METHOD, key)
+            end
           end
+        ensure
+          Thread.current[:crud_sidekiq_job_class] = nil
         end
 
         private
-
-        # CRUD操作を初期化する
-        def initialize_crud_operations
-          CrudOperations.instance.table_operations = {}
-        end
 
         # リクエストの詳細をログ出力する
         def log_request_details
@@ -60,21 +63,18 @@ module Rails
         end
 
         # ExcelファイルにCRUD操作を書き込む
-        def log_and_write_operations(key, method = nil)
+        def log_and_write_operations(method, key)
           CrudData.instance.reload_if_needed
           sheet = CrudData.instance.workbook[0]
 
-          table_operations_copy = CrudOperations.instance.table_operations.dup
-          method_copy = method.nil? ? Constants::DEFAULT_METHOD : method.dup
-          key_copy = key.dup
 
-          table_operations_copy.each_key do |table_name|
-            row = CrudData.instance.crud_rows[method_copy][key_copy]
+          CrudOperations.instance.table_operations[method][key].each_key do |table_name|
+            row = CrudData.instance.crud_rows[method][key]
             col = CrudData.instance.crud_cols[table_name]
 
             # colまたはrowが存在しない場合にログ出力してスキップ
             unless row && col
-              CrudLogger.logger.warn "Row or Column not found for table: #{table_name}, method: #{method_copy}, key: #{key_copy}, row: #{row}, col: #{col}"
+              CrudLogger.logger.warn "Row or Column not found for table: #{table_name}, method: #{method}, key: #{key}, row: #{row}, col: #{col}"
               next
             end
 
@@ -82,14 +82,14 @@ module Rails
             cell = sheet[row][col]
             if cell.nil?
               cell = sheet.add_cell(row, col, "")
-              CrudLogger.logger.warn "Cell not found at row: #{row}, col: #{col} for table: #{table_name}, method: #{method_copy}, key: #{key_copy}. Adding new cell."
+              CrudLogger.logger.warn "Cell not found at row: #{row}, col: #{col} for table: #{table_name}, method: #{method}, key: #{key}. Adding new cell."
               existing_value = ""
             else
               existing_value = cell.value || ""
             end
 
             # 新しい値と既存の値を結合し、重複を排除
-            new_value = table_operations_copy[table_name].join
+            new_value = CrudOperations.instance.table_operations[method][key][table_name].join
             merged_value = (existing_value.chars + new_value.chars).uniq
 
             # CRUDの順序に並び替え
