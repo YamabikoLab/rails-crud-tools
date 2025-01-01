@@ -34,7 +34,7 @@ module Rails
                   method = Constants::DEFAULT_METHOD
                 else
                   CrudLogger.logger.warn "Unknown method and key detected"
-                  return
+                  next
                 end
 
                 CrudOperations.instance.add_operation(method, key, table_name, operation)
