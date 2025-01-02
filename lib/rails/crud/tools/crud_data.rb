@@ -1,5 +1,5 @@
-require_relative 'crud_logger'
-require_relative 'constants'
+require_relative "crud_logger"
+require_relative "constants"
 
 module Rails
   module Crud
@@ -30,9 +30,9 @@ module Rails
           sheet = @workbook[0]
           headers = sheet[0].cells.map(&:value)
 
-          method_col_index = headers.index(config.method_col)
-          action_col_index = headers.index(config.action_col)
-          table_start_col_index = headers.index(config.table_start_col)
+          method_col_index = column_letter_to_index(config.method_col)
+          action_col_index = column_letter_to_index(config.action_col)
+          table_start_col_index = column_letter_to_index(config.table_start_col)
 
           raise "Method column not found" unless method_col_index
           raise "Action column not found" unless action_col_index
@@ -64,6 +64,15 @@ module Rails
             CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
             load_crud_data
           end
+        end
+
+        private
+
+        # アルファベットをインデックスに変換するヘルパーメソッド
+        def column_letter_to_index(letter)
+          return nil unless letter.is_a?(String) && letter.length == 1 && letter =~ /^[A-Z]$/i
+
+          letter.upcase.ord - "A".ord
         end
       end
     end
