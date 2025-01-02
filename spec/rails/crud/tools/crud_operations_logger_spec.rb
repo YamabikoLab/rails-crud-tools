@@ -1,5 +1,5 @@
 require_relative "../../../spec_helper"
-require 'ostruct'
+require "ostruct"
 require "rubyXL"
 require "rubyXL/convenience_methods"
 
@@ -30,7 +30,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
 
   before do
     allow(CrudConfig).to receive_message_chain(:instance, :enabled).and_return(true)
-    allow(CrudConfig).to receive_message_chain(:instance, :crud_file_path).and_return('doc/crud_file.xlsx')
+    allow(CrudConfig).to receive_message_chain(:instance, :crud_file_path).and_return("doc/crud.xlsx")
     allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :table_operations_present?).and_return(true)
     allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :log_operations)
     allow(Rails::Crud::Tools::CrudData).to receive_message_chain(:instance, :reload_if_needed)
