@@ -36,7 +36,7 @@ module RailsCrud
         # 4. `rubyXL`を使って`xlsx`ファイルに書き込み
         workbook = RubyXL::Workbook.new
         sheet = workbook[0]
-        sheet.sheet_name = "Routes"
+        sheet.sheet_name = Rails::Crud::Tools::CrudConfig.instance.sheet_name
 
         # ヘッダー行を追加
         headers = %w[Prefix Verb URI Controller#Action crud_count] + table_names
@@ -94,7 +94,7 @@ module RailsCrud
 
         # ヘッダーの背景色を設定
         (0..headers.length - 1).each do |col_index|
-          sheet[0][col_index].change_fill(CrudConfig.instance.header_bg_color)
+          sheet[0][col_index].change_fill(Rails::Crud::Tools::CrudConfig.instance.header_bg_color)
         end
 
         # 列幅を設定
@@ -108,7 +108,7 @@ module RailsCrud
         end
 
         # ファイルを保存
-        crud_file = CrudConfig.instance.crud_file_path
+        crud_file = Rails::Crud::Tools::CrudConfig.instance.crud_file_path
         workbook.write(crud_file)
 
         puts "Output: #{crud_file}"

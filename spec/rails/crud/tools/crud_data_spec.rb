@@ -16,6 +16,7 @@ RSpec.describe Rails::Crud::Tools::CrudData do
   let(:workbook) do
     workbook = RubyXL::Workbook.new
     sheet = workbook[0]
+    sheet.sheet_name = Rails::Crud::Tools::CrudConfig.instance.sheet_name
     sheet.add_cell(0, 0, "Prefix")
     sheet.add_cell(0, 1, "Verb")
     sheet.add_cell(0, 2, "URI")

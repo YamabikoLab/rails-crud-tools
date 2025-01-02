@@ -7,7 +7,7 @@ module Rails
       class CrudConfig
         include Singleton
 
-        attr_accessor :enabled, :base_dir, :crud_file, :method_col, :action_col, :table_start_col, :header_bg_color, :sql_logging_enabled
+        attr_accessor :enabled, :base_dir, :crud_file, :sheet_name, :method_col, :action_col, :table_start_col, :header_bg_color, :sql_logging_enabled
 
         def initialize
           config_file = ".crudconfig"
@@ -20,6 +20,7 @@ module Rails
           @enabled = config.key?("enabled") ? config["enabled"] : true
           @base_dir = config["base_dir"] || "doc"
           @crud_file = config["crud_file"] || "crud.xlsx"
+          @sheet_name = config["sheet_name"] || "Routes"
           @method_col = config["method_col"] || "B"
           @action_col = config["action_col"] || "D"
           @table_start_col = config["table_start_col"] || "F"
@@ -37,6 +38,10 @@ module Rails
 
         def self.crud_file
           instance.crud_file
+        end
+
+        def self.sheet_name
+          instance.sheet_name
         end
 
         def self.method_col

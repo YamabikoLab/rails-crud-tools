@@ -27,7 +27,7 @@ module Rails
 
           @workbook = RubyXL::Parser.parse(config.crud_file_path)
           @last_loaded_time = File.mtime(config.crud_file_path)
-          sheet = @workbook[0]
+          sheet = @workbook[Rails::Crud::Tools::CrudConfig.instance.sheet_name]
           headers = sheet[0].cells.map(&:value)
 
           method_col_index = column_letter_to_index(config.method_col)

@@ -32,6 +32,7 @@ To set up the configuration, create a .crudconfig file in the root directory of 
 enabled: true # Enables or disables the CRUD tools functionality
 base_dir: doc # The base directory where the CRUD files will be stored
 crud_file: crud.xlsx # The name of the CRUD Excel file
+sheet_name: CRUD # The name of the sheet in the CRUD Excel file
 method_col: B # The column letter for the method in the CRUD Excel file
 action_col: D # The column letter for the action in the CRUD Excel file
 table_start_col: F # The column letter where the table data starts in the CRUD Excel file
