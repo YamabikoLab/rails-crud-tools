@@ -1,11 +1,10 @@
 require_relative 'crud_logger'
 require_relative 'constants'
 
-# このクラスは、CRUDファイルからデータを読み込むためのクラスです。
-
 module Rails
   module Crud
     module Tools
+      # このクラスは、CRUDファイルからデータを読み込むためのクラスです。
       class CrudData
         include Singleton
 
