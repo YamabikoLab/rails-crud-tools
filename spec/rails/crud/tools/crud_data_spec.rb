@@ -2,6 +2,7 @@ require_relative "../../../spec_helper"
 require "rubyXL"
 require "rubyXL/convenience_methods"
 require "singleton"
+require "fileutils"
 
 RSpec.describe Rails::Crud::Tools::CrudData do
   let(:crud_data) { described_class.instance }
@@ -61,7 +62,11 @@ RSpec.describe Rails::Crud::Tools::CrudData do
 
     it "does not reload CRUD data if the file has not been modified" do
       crud_data.load_crud_data
-      allow(File).to receive(:mtime).with(config.crud_file_path).and_return(Time.now)
+      # ファイルのタイムスタンプを取得
+      file_mtime = File.mtime(config.crud_file_path)
+
+      # ファイルのタイムスタンプよりも1秒前の日時を設定
+      allow(File).to receive(:mtime).with(config.crud_file_path).and_return(file_mtime - 1)
 
       expect(crud_data).not_to receive(:load_crud_data)
       crud_data.reload_if_needed

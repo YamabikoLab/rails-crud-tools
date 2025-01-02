@@ -11,4 +11,7 @@ gem "rspec", "~> 3.0"
 
 gem "rubocop", "~> 1.21"
 
-gem "rails"
+group :test do
+  gem "rails"
+  gem "simplecov"
+end
