@@ -10,7 +10,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       include Rails::Crud::Tools::OperationsLogger
 
       def request
-        OpenStruct.new(request_method: "GET")
+        OpenStruct.new(request_method: "PUT")
       end
 
       def controller_path
@@ -18,7 +18,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       end
 
       def action_name
-        "index"
+        "update"
       end
 
       def self.name
@@ -41,11 +41,20 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
 
   describe "#log_crud_operations" do
     before do
-      allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :table_operations).and_return({ "GET" => { "users#index" => { "active_admin_comments" => ["C"] } } })
+      allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :table_operations).and_return({ "PUT" => { "users#update" => { "active_admin_comments" => ["C"] } } })
     end
 
     it "executes the block and logs operations" do
+      # 1.ブロックを実行し、データ更新が正しく行われているかを確認
       expect { |b| instance.log_crud_operations(&b) }.to yield_control
+
+      # 2. crud_fileを読み込み、データが更新されているか確認
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.crud_file)
+      sheet = workbook[0]
+      cell = sheet[3][5]
+
+      # 3. cellの値が"CU"であることを確認
+      expect(cell.value).to eq("CU")
     end
   end
 
@@ -55,7 +64,16 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
     end
 
     it "executes the block and logs operations for job" do
+      # 1.ブロックを実行し、データ更新が正しく行われているかを確認
       expect { |b| instance.log_crud_operations_for_job(&b) }.to yield_control
+
+      # 2. crud_fileを読み込み、データが更新されているか確認
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.crud_file)
+      sheet = workbook[0]
+      cell = sheet[5][7]
+
+      # 3. cellの値が"CU"であることを確認
+      expect(cell.value).to eq("CU")
     end
   end
 end
