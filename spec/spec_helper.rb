@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-
 def create_directories
   @doc_dir = File.join(Dir.pwd, 'doc')
   @log_dir = File.join(Dir.pwd, 'log')
