@@ -31,11 +31,10 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
 
   before do
     allow(File).to receive(:exist?).and_return(true)
-    allow(File).to receive(:mtime).and_return(Time.now)
-    allow(RubyXL::Parser).to receive(:parse).and_return(workbook)
     allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :table_operations_present?).and_return(true)
     allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :log_operations)
 
+    workbook
     Rails::Crud::Tools::CrudData.instance.load_crud_data
   end
 
@@ -49,13 +48,25 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       expect { |b| instance.log_crud_operations(&b) }.to yield_control
 
       # 2. crud_fileを読み込み、データが更新されているか確認
-      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file)
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
       sheet = workbook[0]
       cell = sheet[3][5]
 
       # 3. cellの値が"CU"であることを確認
       expect(cell.value).to eq("CU")
     end
+  end
+
+  it "does not write to the Excel file if contents have not changed" do
+    allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :table_operations).and_return({ "PUT" => { "users#update" => { "active_admin_comments" => ["U"] } } })
+
+    last_loaded_time_before = Rails::Crud::Tools::CrudData.instance.last_loaded_time
+
+    instance.log_crud_operations {}
+
+    last_loaded_time_after = Rails::Crud::Tools::CrudData.instance.last_loaded_time
+
+    expect(last_loaded_time_after).to eq(last_loaded_time_before)
   end
 
   describe "#log_crud_operations_for_job" do
@@ -68,7 +79,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       expect { |b| instance.log_crud_operations_for_job(&b) }.to yield_control
 
       # 2. crud_fileを読み込み、データが更新されているか確認
-      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file)
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
       sheet = workbook[0]
       cell = sheet[5][7]
 

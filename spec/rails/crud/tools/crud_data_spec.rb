@@ -10,7 +10,7 @@ RSpec.describe Rails::Crud::Tools::CrudData do
   before do
     allow(File).to receive(:exist?).and_return(true)
     allow(File).to receive(:mtime).and_return(Time.now)
-    allow(RubyXL::Parser).to receive(:parse).and_return(workbook)
+    workbook
   end
 
   describe "#load_crud_data" do
@@ -66,6 +66,23 @@ RSpec.describe Rails::Crud::Tools::CrudData do
 
       expect(crud_data).not_to receive(:load_crud_data)
       crud_data.reload_if_needed
+    end
+  end
+
+  describe "#get_crud_sheet" do
+
+    before do
+      crud_data.workbook = workbook
+    end
+
+    it "returns the sheet if found" do
+      expect(crud_data.get_crud_sheet).not_to be_nil
+    end
+
+    it "raises an error if the sheet is not found" do
+      non_existent_sheet_name = "NonExistentSheetName"
+      allow(Rails::Crud::Tools::CrudConfig.instance).to receive(:sheet_name).and_return(non_existent_sheet_name)
+      expect { crud_data.get_crud_sheet }.to raise_error("CRUD sheet '#{non_existent_sheet_name}' not found")
     end
   end
 end

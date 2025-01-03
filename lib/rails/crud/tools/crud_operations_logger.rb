@@ -113,7 +113,7 @@ module Rails
             timestamp = File.mtime(CrudConfig.instance.crud_file_path)
             CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
             # タイムスタンプを更新する
-            CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
+            CrudData.instance.last_loaded_time = timestamp
           end
         end
       end

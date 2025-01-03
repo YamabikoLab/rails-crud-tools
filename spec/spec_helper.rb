@@ -58,7 +58,8 @@ RSpec.configure do |config|
   def workbook
     workbook = RubyXL::Workbook.new
     sheet = workbook[0]
-    sheet.sheet_name = Rails::Crud::Tools::CrudConfig.instance.sheet_name
+    config = Rails::Crud::Tools::CrudConfig.instance
+    sheet.sheet_name = config.sheet_name
     # ヘッダー行
     sheet.add_cell(0, 0, "Prefix")
     sheet.add_cell(0, 1, "Verb")
@@ -119,6 +120,9 @@ RSpec.configure do |config|
     sheet.add_cell(5, 7, "U")
     sheet.add_cell(5, 4, calculate_crud_count(sheet, 5))
 
+    workbook.write(config.crud_file_path)
+    timestamp = File.mtime(config.crud_file_path)
+    Rails::Crud::Tools::CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
     workbook
   end
 

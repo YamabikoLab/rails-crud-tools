@@ -8,7 +8,7 @@ module Rails
       class CrudData
         include Singleton
 
-        attr_accessor :crud_rows, :crud_cols, :workbook
+        attr_accessor :crud_rows, :crud_cols, :workbook, :last_loaded_time
 
         def initialize
           @crud_rows = {}

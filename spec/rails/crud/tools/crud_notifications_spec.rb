@@ -29,9 +29,6 @@ RSpec.describe Rails::Crud::Tools do
         ActiveSupport::Notifications.publish(event)
       end
 
-      # table_operations = Rails::Crud::Tools::CrudOperations.instance.table_operations
-      # expect(table_operations["GET"]["users#index"]["users"]).to include("R")
-
     end
 
     it "logs SQL queries and adds operations for INSERT and SELECT" do
