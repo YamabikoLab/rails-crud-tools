@@ -49,7 +49,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       expect { |b| instance.log_crud_operations(&b) }.to yield_control
 
       # 2. crud_fileを読み込み、データが更新されているか確認
-      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.crud_file)
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file)
       sheet = workbook[0]
       cell = sheet[3][5]
 
@@ -68,7 +68,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       expect { |b| instance.log_crud_operations_for_job(&b) }.to yield_control
 
       # 2. crud_fileを読み込み、データが更新されているか確認
-      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.crud_file)
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file)
       sheet = workbook[0]
       cell = sheet[5][7]
 

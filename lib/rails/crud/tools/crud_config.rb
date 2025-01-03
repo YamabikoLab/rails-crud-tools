@@ -1,5 +1,4 @@
 require "yaml"
-require "singleton"
 
 module Rails
   module Crud
@@ -7,57 +6,35 @@ module Rails
       class CrudConfig
         include Singleton
 
-        attr_accessor :enabled, :base_dir, :crud_file, :sheet_name, :method_col, :action_col, :table_start_col, :header_bg_color, :sql_logging_enabled
+        attr_accessor :enabled, :base_dir, :crud_file, :sheet_name, :method_col, :action_col, :table_start_col, :sql_logging_enabled, :header_bg_color, :font_name
 
         def initialize
-          config_file = ".crudconfig"
-          config = if File.exist?(config_file)
-                     YAML.load_file(config_file)
-                   else
-                     {}
-                   end
-
-          @enabled = config.key?("enabled") ? config["enabled"] : true
-          @base_dir = config["base_dir"] || "doc"
-          @crud_file = config["crud_file"] || "crud.xlsx"
-          @sheet_name = config["sheet_name"] || "Routes"
-          @method_col = config["method_col"] || "B"
-          @action_col = config["action_col"] || "D"
-          @table_start_col = config["table_start_col"] || "F"
-          @header_bg_color = config["header_bg_color"] || "00FFCC"
-          @sql_logging_enabled = config.key?("sql_logging_enabled") ? config["sql_logging_enabled"] : true
+          @config_file = ".crudconfig"
+          @last_loaded = nil
+          load_config
         end
 
-        def self.enabled
-          instance.enabled
-        end
+        def load_config
+          if @last_loaded.nil? || File.mtime(@config_file) > @last_loaded
+            unless File.exist?(@config_file)
+              raise "Config file not found: #{@config_file}. Please generate it using `bundle exec crud gen_config`."
+            end
 
-        def self.base_dir
-          instance.base_dir
-        end
+            config = YAML.load_file(@config_file)
 
-        def self.crud_file
-          instance.crud_file
-        end
+            @enabled = config["enabled"]
+            @base_dir = config["base_dir"]
+            @crud_file = config["crud_file"]
+            @sheet_name = config["sheet_name"]
+            @method_col = config["method_col"]
+            @action_col = config["action_col"]
+            @table_start_col = config["table_start_col"]
+            @sql_logging_enabled = config["sql_logging_enabled"]
+            @header_bg_color = config["header_bg_color"]
+            @font_name = config["font_name"]
 
-        def self.sheet_name
-          instance.sheet_name
-        end
-
-        def self.method_col
-          instance.method_col
-        end
-
-        def self.action_col
-          instance.action_col
-        end
-
-        def self.table_start_col
-          instance.table_start_col
-        end
-
-        def self.header_bg_color
-          instance.header_bg_color
+            @last_loaded = File.mtime(@config_file)
+          end
         end
 
         def crud_file_path

@@ -33,11 +33,12 @@ enabled: true # Enables or disables the CRUD tools functionality
 base_dir: doc # The base directory where the CRUD files will be stored
 crud_file: crud.xlsx # The name of the CRUD Excel file
 sheet_name: CRUD # The name of the sheet in the CRUD Excel file
-method_col: B # The column letter for the method in the CRUD Excel file
-action_col: D # The column letter for the action in the CRUD Excel file
-table_start_col: F # The column letter where the table data starts in the CRUD Excel file
+method_col: Verb # Column indicating the HTTP method
+action_col: Controller#Action # Column indicating the controller and action
+table_start_col: active_admin_comments  Column where the table starts
 header_bg_color: 00FFCC # The background color for the header in the CRUD Excel file
 sql_logging_enabled: true # Enables or disables SQL logging for CRUD operations
+font_name: Arial # The font name used in the CRUD Excel file
 ```
 
 ### Generate CRUD Diagram

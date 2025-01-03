@@ -4,15 +4,17 @@ require 'active_record'
 require 'yaml'
 require 'erb'
 
-module RailsCrud
+module RailsCrudTools
   class CLI
+    @application_loaded = false
     class << self
-      def gen
-        load_application
+      def generate_crud_file
+        load_application unless @application_loaded
 
         # 1. `bundle exec rails routes --expanded`の結果を取得
         routes_output = `bundle exec rails routes --expanded`
-        font_name = "MS Pゴシック"
+        config = Rails::Crud::Tools::CrudConfig.instance
+        font_name = config.font_name
 
         # 2. 取得した結果を区切り文字で分割
         routes_lines = routes_output.split("\n").reject(&:empty?)
@@ -36,7 +38,7 @@ module RailsCrud
         # 4. `rubyXL`を使って`xlsx`ファイルに書き込み
         workbook = RubyXL::Workbook.new
         sheet = workbook[0]
-        sheet.sheet_name = Rails::Crud::Tools::CrudConfig.instance.sheet_name
+        sheet.sheet_name = config.sheet_name
 
         # ヘッダー行を追加
         headers = %w[Prefix Verb URI Controller#Action crud_count] + table_names
@@ -94,7 +96,7 @@ module RailsCrud
 
         # ヘッダーの背景色を設定
         (0..headers.length - 1).each do |col_index|
-          sheet[0][col_index].change_fill(Rails::Crud::Tools::CrudConfig.instance.header_bg_color)
+          sheet[0][col_index].change_fill(config.header_bg_color)
         end
 
         # 列幅を設定
@@ -108,15 +110,45 @@ module RailsCrud
         end
 
         # ファイルを保存
-        crud_file = Rails::Crud::Tools::CrudConfig.instance.crud_file_path
+        crud_file = config.crud_file_path
         workbook.write(crud_file)
 
         puts "Output: #{crud_file}"
       end
 
+      def generate_crudconfig
+        load_application unless @application_loaded
+
+        table_names = ActiveRecord::Base.connection.tables.sort
+        table_start_col = table_names.any? ? table_names.first : "active_admin_comments"
+
+        config_content = <<~CONFIG
+          enabled: true
+          base_dir: doc
+          crud_file: crud.xlsx
+          sheet_name: CRUD
+          method_col: Verb
+          action_col: Controller#Action
+          table_start_col: #{table_start_col}
+          sql_logging_enabled: true
+          header_bg_color: 00FFCC
+          font_name: Arial
+        CONFIG
+
+        File.write('.crudconfig', config_content)
+        puts "Generated .crudconfig file"
+      end
+
+      def init
+        generate_crud_file
+        generate_crudconfig
+      end
+
       private
 
       def load_application
+        return if @application_loaded
+
         path = Dir.pwd
         $stderr.puts "Loading application in '#{File.basename(path)}'..."
         environment_path = "#{path}/config/environment.rb"
@@ -126,6 +158,8 @@ module RailsCrud
           Rails.application.eager_load!
           Rails.application.config.eager_load_namespaces.each(&:eager_load!) if Rails.application.config.respond_to?(:eager_load_namespaces)
         end
+
+        @application_loaded = true
       rescue ::LoadError
         error_message = <<~EOS
           Tried to load your application environment from '#{environment_path}'.

@@ -8,6 +8,24 @@ def create_directories
   FileUtils.mkdir_p(@log_dir)
 end
 
+def generate_crudconfig
+  config_content = <<~CONFIG
+    enabled: true
+    base_dir: doc
+    crud_file: crud.xlsx
+    sheet_name: CRUD
+    method_col: Verb
+    action_col: Controller#Action
+    table_start_col: active_admin_comments
+    sql_logging_enabled: true
+    header_bg_color: 00FFCC
+    font_name: Arial
+  CONFIG
+
+  File.write('.crudconfig', config_content)
+  puts "Generated .crudconfig file"
+end
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -17,6 +35,10 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  config.after(:suite) do
+    File.delete('.crudconfig') if File.exist?('.crudconfig')
   end
 
   config.before(:each) do
@@ -29,6 +51,7 @@ RSpec.configure do |config|
   end
 
   create_directories
+  generate_crudconfig
 
   require "rails/crud/tools"
 
