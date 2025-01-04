@@ -111,6 +111,10 @@ module RailsCrudTools
 
         # ファイルを保存
         crud_file = config.crud_file_path
+        base_dir = File.dirname(crud_file)
+
+        # base_dirが存在しなければ作成
+        FileUtils.mkdir_p(base_dir) unless Dir.exist?(base_dir)
         workbook.write(crud_file)
 
         puts "Output: #{crud_file}"
