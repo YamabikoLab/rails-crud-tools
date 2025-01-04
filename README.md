@@ -1,6 +1,7 @@
 # Rails::Crud::Tools
 
-Welcome to Rails::Crud::Tools! This gem provides a tool to automatically update CRUD diagrams as you interact with your application. It simplifies logging and managing CRUD operations seamlessly within a Rails application.
+Welcome to Rails::Crud::Tools! This gem provides a tool to automatically update CRUD diagrams as you interact with your application.   
+It simplifies logging and managing CRUD operations seamlessly within a Rails application.
 
 ## Installation
 
@@ -47,7 +48,8 @@ font_name: Arial # The font name used in the CRUD Excel file
 
 ### How It Works
 
-Once integrated, the gem automatically tracks CRUD operations (Create, Read, Update, Delete) performed in your application. The diagrams will update dynamically based on these operations, providing you with real-time insights into your application's data flow.
+Once integrated, the gem automatically tracks CRUD operations (Create, Read, Update, Delete) performed in your application.   
+The diagrams will update dynamically based on these operations, providing you with real-time insights into your application's data flow.
 
 ## Logs
 
@@ -55,7 +57,8 @@ Please refer to the log file at `log/crud.log`.
 
 ## CRUD Macro Workbook
 
-The `tools/crud_macro.xlsm` file is a macro-enabled workbook used for manipulating CRUD diagrams. This workbook contains macros that help in managing and visualizing CRUD operations within your application.
+The `tools/crud_macro.xlsm` file is a macro-enabled workbook used for manipulating CRUD diagrams.  
+This workbook contains macros that help in managing and visualizing CRUD operations within your application.
 
 ### Download
 
