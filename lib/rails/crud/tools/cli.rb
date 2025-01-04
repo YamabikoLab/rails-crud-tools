@@ -140,8 +140,8 @@ module RailsCrudTools
       end
 
       def init
-        generate_crud_file
         generate_crudconfig
+        generate_crud_file
       end
 
       private
