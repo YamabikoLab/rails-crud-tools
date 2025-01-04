@@ -15,6 +15,7 @@ module Rails
     module Tools
       def self.setup()
         return unless File.exist?(".crudconfig")
+        return unless File.exist?(CrudConfig.instance.crud_file_path)
 
         CrudData.instance.load_crud_data
         setup_notifications
