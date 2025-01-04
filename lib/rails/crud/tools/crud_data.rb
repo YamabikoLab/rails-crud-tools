@@ -66,7 +66,7 @@ module Rails
 
           last_modified_by = get_last_modified_by(config.crud_file_path)
           CrudLogger.logger.debug "last modified by: #{last_modified_by}. setup_id: #{setup_id}"
-          return unless setup_id == last_modified_by
+          return if setup_id == last_modified_by
 
           CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
           load_crud_data
