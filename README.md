@@ -9,7 +9,7 @@ It simplifies logging and managing CRUD operations seamlessly within a Rails app
 Add the gem to the `development` group in your application's Gemfile by including the following lines:
 
 ```ruby
-gem 'rails-crud-tools', git: 'https://github.com/YamabikoLab/rails-crud-tools', tag: 'v*.*.*'
+gem 'rails-crud-tools'
 ```
 
 Then execute:
