@@ -2,19 +2,25 @@
 require "rails/crud/tools/cli"
 
 def display_help
-  puts <<-HELP
-Usage: crud [command]
+  puts <<~HELP
+    Usage: crud [command]
 
-Commands:
-  gen     Generate CRUD operations
-  help    Display this help message
+    Commands:
+      init    Initialize by generating CRUD and config files
+      gen_crud     Generate CRUD
+      gen_config   Generate config
+      help    Display this help message
   HELP
 end
 
 if ARGV.empty? || ARGV.include?("help")
   display_help
-elsif ARGV.include?("gen")
-  RailsCrud::CLI.gen
+elsif ARGV.include?("init")
+  RailsCrudTools::CLI.init
+elsif ARGV.include?("gen_crud")
+  RailsCrudTools::CLI.generate_crud_file
+elsif ARGV.include?("gen_config")
+  RailsCrudTools::CLI.generate_crudconfig
 else
   puts "Unknown command: #{ARGV.join(' ')}"
   display_help

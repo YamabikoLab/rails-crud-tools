@@ -10,6 +10,7 @@ module Rails
         # コントローラのCRUD操作をログ出力する
         def log_crud_operations
           if CrudConfig.instance.enabled
+            CrudConfig.instance.load_config
             log_request_details
             Thread.current[:crud_request] = request
           end
@@ -31,6 +32,7 @@ module Rails
         # ジョブのCRUD操作をログ出力する
         def log_crud_operations_for_job
           if CrudConfig.instance.enabled
+            CrudConfig.instance.load_config
             log_job_details
             key = self.class.name
             Thread.current[:crud_sidekiq_job_class] = key
@@ -65,8 +67,10 @@ module Rails
         # ExcelファイルにCRUD操作を書き込む
         def log_and_write_operations(method, key)
           CrudData.instance.reload_if_needed
-          sheet = CrudData.instance.workbook[0]
+          sheet = CrudData.instance.get_crud_sheet
 
+          # フラグを初期化
+          contents_changed = false
 
           CrudOperations.instance.table_operations[method][key].each_key do |table_name|
             row = CrudData.instance.crud_rows[method][key]
@@ -96,15 +100,21 @@ module Rails
             crud_order = %w[C R U D]
             sorted_value = merged_value.sort_by { |char| crud_order.index(char) }.join
 
-            cell.change_contents(sorted_value)
+            # 値が変化した場合のみ change_contents を実行
+            if cell.value != sorted_value
+              cell.change_contents(sorted_value)
+              contents_changed = true
+            end
           end
 
-          # Excelファイルを書き込む
-          CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
-          timestamp = File.mtime(CrudConfig.instance.crud_file_path)
-          CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
-          # タイムスタンプを更新する
-          CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
+          if contents_changed
+            # Excelファイルを書き込む
+            CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
+            timestamp = File.mtime(CrudConfig.instance.crud_file_path)
+            CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
+            # タイムスタンプを更新する
+            CrudData.instance.last_loaded_time = timestamp
+          end
         end
       end
     end
