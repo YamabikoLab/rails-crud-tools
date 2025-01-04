@@ -9,6 +9,7 @@ require_relative "tools/crud_config"
 require_relative "tools/crud_notifications"
 require_relative "tools/railtie"
 require_relative "tools/crud_data"
+require "securerandom"
 
 module Rails
   module Crud
@@ -24,6 +25,8 @@ module Rails
           return
         end
 
+        setup_id = SecureRandom.uuid
+        CrudData.instance.setup_id = setup_id
         CrudData.instance.load_crud_data
         setup_notifications
       end

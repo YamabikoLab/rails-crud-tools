@@ -11,6 +11,10 @@ gem "rspec", "~> 3.0"
 
 gem "rubocop", "~> 1.21"
 
+gem "rubyzip", "~> 2.4"
+
+gem "securerandom", "~> 0.3.2"
+
 group :test do
   gem "rails"
   gem "simplecov"

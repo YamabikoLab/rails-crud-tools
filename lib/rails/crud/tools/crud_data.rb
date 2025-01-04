@@ -1,3 +1,4 @@
+require "zip"
 require_relative "crud_logger"
 require_relative "constants"
 
@@ -8,9 +9,10 @@ module Rails
       class CrudData
         include Singleton
 
-        attr_accessor :crud_rows, :crud_cols, :workbook, :last_loaded_time
+        attr_accessor :setup_id, :crud_rows, :crud_cols, :workbook, :last_loaded_time
 
         def initialize
+          @setup_id = nil
           @crud_rows = {}
           @crud_cols = {}
           @last_loaded_time = nil
@@ -61,9 +63,28 @@ module Rails
           return unless config.enabled
 
           return unless @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
+          last_modified_by = get_last_modified_by(config.crud_file_path)
+          CrudLogger.logger.debug "last modified by: #{last_modified_by}"
+          return unless setup_id == last_modified_by
           CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
           load_crud_data
+        end
 
+        # xlsxファイルの最終更新者を取得する
+        def get_last_modified_by(file_path)
+          last_modified_by = nil
+
+          Zip::File.open(file_path) do |zipfile|
+            doc_props = zipfile.find_entry("docProps/core.xml")
+            if doc_props
+              content = doc_props.get_input_stream.read
+              last_modified_by = content[/\<cp:lastModifiedBy\>(.*?)\<\/cp:lastModifiedBy\>/, 1]
+            else
+              CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
+            end
+          end
+
+          last_modified_by
         end
 
         # CRUDシートを取得する

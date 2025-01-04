@@ -1,5 +1,6 @@
-require_relative 'crud_logger'
-require_relative 'constants'
+require "zip"
+require_relative "crud_logger"
+require_relative "constants"
 
 # ログ出力を行うモジュール
 module Rails
@@ -110,12 +111,39 @@ module Rails
           if contents_changed
             # Excelファイルを書き込む
             CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
+            set_last_modified_by(CrudConfig.instance.crud_file_path, CrudData.instance.setup_id)
             timestamp = File.mtime(CrudConfig.instance.crud_file_path)
             CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
             # タイムスタンプを更新する
             CrudData.instance.last_loaded_time = timestamp
           end
         end
+
+        # xlsxファイルの最終更新者を更新する
+        def set_last_modified_by(file_path, modifier_name)
+          Zip::File.open(file_path) do |zip_file|
+            doc_props = zip_file.find_entry("docProps/core.xml")
+            if doc_props
+              content = doc_props.get_input_stream.read
+              updated_content = if content.include?("<cp:lastModifiedBy>")
+                                  content.sub(
+                                    %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
+                                    "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
+                                  )
+              else
+                content.sub(
+                  %r{</cp:coreProperties>},
+                  "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
+                )
+                                end
+              zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
+              CrudLogger.logger.info "最終更新者を#{modifier_name}に設定しました。"
+            else
+              CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
+            end
+          end
+        end
+
       end
     end
   end
