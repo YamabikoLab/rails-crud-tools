@@ -109,13 +109,16 @@ module Rails
           end
 
           if contents_changed
-            # Excelファイルを書き込む
-            CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
-            set_last_modified_by(CrudConfig.instance.crud_file_path, CrudData.instance.setup_id)
-            timestamp = File.mtime(CrudConfig.instance.crud_file_path)
-            CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
-            # タイムスタンプを更新する
-            CrudData.instance.last_loaded_time = timestamp
+            # 非同期処理をスレッドで実行
+            Thread.new do
+              # Excelファイルを書き込む
+              CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
+              set_last_modified_by(CrudConfig.instance.crud_file_path, CrudData.instance.setup_id)
+              timestamp = File.mtime(CrudConfig.instance.crud_file_path)
+              CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
+              # タイムスタンプを更新する
+              CrudData.instance.last_loaded_time = timestamp
+            end
           end
         end
 
@@ -130,11 +133,11 @@ module Rails
                                     %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
                                     "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
                                   )
-              else
-                content.sub(
-                  %r{</cp:coreProperties>},
-                  "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
-                )
+                                else
+                                  content.sub(
+                                    %r{</cp:coreProperties>},
+                                    "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
+                                  )
                                 end
               zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
               CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
