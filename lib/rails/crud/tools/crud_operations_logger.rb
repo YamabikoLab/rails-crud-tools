@@ -137,9 +137,9 @@ module Rails
                 )
                                 end
               zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
-              CrudLogger.logger.info "最終更新者を#{modifier_name}に設定しました。"
+              CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
             else
-              CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
+              CrudLogger.logger.warn "docProps/core.xml was not found."
             end
           end
         end
