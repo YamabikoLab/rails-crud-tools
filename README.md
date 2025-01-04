@@ -25,7 +25,11 @@ $ gem install rails-crud-tools
 ## Usage
 
 ### Setup
-To set up the configuration, create a .crudconfig file in the root directory of your project with the following content:
+This command will generate the **doc/crud.xlsx** file and the **.crudconfig** file.
+
+```sh
+$ bundle exec crud init
+```
 
 .crudconfig
 ```yaml
@@ -39,14 +43,6 @@ table_start_col: your_first_table  # Column where the table starts
 header_bg_color: 00FFCC # The background color for the header in the CRUD Excel file
 sql_logging_enabled: true # Enables or disables SQL logging for CRUD operations
 font_name: Arial # The font name used in the CRUD Excel file
-```
-
-### Generate CRUD Diagram
-
-To generate the CRUD diagram file, run the following command:
-
-```sh
-$ bundle exec crud gen
 ```
 
 ### How It Works
