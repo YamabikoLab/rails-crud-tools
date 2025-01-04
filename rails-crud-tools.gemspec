@@ -12,9 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'This gem provides CRUD functionality for Rails applications.'
   spec.homepage = "https://github.com/YamabikoLab"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
-
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  spec.required_ruby_version = ">= 2.6.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/YamabikoLab/rails-crud-tools"
