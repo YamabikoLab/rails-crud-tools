@@ -9,10 +9,10 @@ module Rails
       class CrudData
         include Singleton
 
-        attr_accessor :setup_id, :crud_rows, :crud_cols, :workbook, :last_loaded_time
+        attr_accessor :process_id, :crud_rows, :crud_cols, :workbook, :last_loaded_time
 
         def initialize
-          @setup_id = nil
+          @process_id = nil
           @crud_rows = {}
           @crud_cols = {}
           @last_loaded_time = nil
@@ -65,8 +65,8 @@ module Rails
           return unless @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
 
           last_modified_by = get_last_modified_by(config.crud_file_path)
-          CrudLogger.logger.debug "last modified by: #{last_modified_by}. setup_id: #{setup_id}"
-          return if setup_id == last_modified_by
+          CrudLogger.logger.debug "last modified by: #{last_modified_by}. setup_id: #{process_id}"
+          return if process_id == last_modified_by
 
           CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"
           load_crud_data

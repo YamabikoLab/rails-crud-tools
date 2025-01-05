@@ -13,7 +13,7 @@ end
 def generate_crudconfig
   config_content = <<~CONFIG
     enabled: true
-    base_dir: doc2
+    base_dir: doc
     crud_file: crud.xlsx
     sheet_name: CRUD
     method_col: Verb
@@ -125,7 +125,7 @@ RSpec.configure do |config|
     workbook.write(config.crud_file_path)
     timestamp = File.mtime(config.crud_file_path)
     Rails::Crud::Tools::CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
-    Rails::Crud::Tools::CrudData.instance.setup_id = "test"
+    Rails::Crud::Tools::CrudData.instance.process_id = "test"
     workbook
   end
 

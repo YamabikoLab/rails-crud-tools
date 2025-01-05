@@ -32,7 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "activerecord", "~> 7.0"
   spec.add_runtime_dependency "rubyXL", "~> 3.4"
   spec.add_runtime_dependency "rubyzip", "~> 2.4"
-  spec.add_runtime_dependency "securerandom", "~> 0.3.2"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

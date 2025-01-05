@@ -51,6 +51,31 @@ module Rails
           Thread.current[:crud_sidekiq_job_class] = nil
         end
 
+        # xlsxファイルの最終更新者を更新する
+        def set_last_modified_by(file_path, modifier_name)
+          Zip::File.open(file_path) do |zip_file|
+            doc_props = zip_file.find_entry("docProps/core.xml")
+            if doc_props
+              content = doc_props.get_input_stream.read
+              updated_content = if content.include?("<cp:lastModifiedBy>")
+                                  content.sub(
+                                    %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
+                                    "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
+                                  )
+                                else
+                                  content.sub(
+                                    %r{</cp:coreProperties>},
+                                    "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
+                                  )
+                                end
+              zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
+              CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
+            else
+              CrudLogger.logger.warn "docProps/core.xml was not found."
+            end
+          end
+        end
+
         private
 
         # リクエストの詳細をログ出力する
@@ -108,41 +133,30 @@ module Rails
             end
           end
 
-          if contents_changed
-            # 非同期処理をスレッドで実行
-            Thread.new do
+          return unless contents_changed
+
+          Thread.new do
+            update_crud_file
+          rescue StandardError => e
+            CrudLogger.logger.error "Failed to update #{CrudConfig.instance.crud_file_path}: #{e.message}"
+
+          end
+
+        end
+
+        def update_crud_file
+          File.open(CrudConfig.instance.crud_file_path, "r+") do |crud_file|
+            crud_file.flock(File::LOCK_EX)
+            begin
               # Excelファイルを書き込む
-              CrudData.instance.workbook.write(CrudConfig.instance.crud_file_path)
-              set_last_modified_by(CrudConfig.instance.crud_file_path, CrudData.instance.setup_id)
-              timestamp = File.mtime(CrudConfig.instance.crud_file_path)
+              CrudData.instance.workbook.write(crud_file)
+              set_last_modified_by(crud_file, CrudData.instance.process_id)
+              timestamp = File.mtime(crud_file)
               CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
               # タイムスタンプを更新する
               CrudData.instance.last_loaded_time = timestamp
-            end
-          end
-        end
-
-        # xlsxファイルの最終更新者を更新する
-        def set_last_modified_by(file_path, modifier_name)
-          Zip::File.open(file_path) do |zip_file|
-            doc_props = zip_file.find_entry("docProps/core.xml")
-            if doc_props
-              content = doc_props.get_input_stream.read
-              updated_content = if content.include?("<cp:lastModifiedBy>")
-                                  content.sub(
-                                    %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
-                                    "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
-                                  )
-                                else
-                                  content.sub(
-                                    %r{</cp:coreProperties>},
-                                    "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
-                                  )
-                                end
-              zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
-              CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
-            else
-              CrudLogger.logger.warn "docProps/core.xml was not found."
+            ensure
+              crud_file.flock(File::LOCK_UN)
             end
           end
         end

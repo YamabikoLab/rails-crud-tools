@@ -33,6 +33,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
     allow(File).to receive(:exist?).and_return(true)
     allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :table_operations_present?).and_return(true)
     allow(Rails::Crud::Tools::CrudOperations).to receive_message_chain(:instance, :log_operations)
+    allow_any_instance_of(Rails::Crud::Tools::OperationsLogger).to receive(:set_last_modified_by).and_return(nil)
 
     workbook
     Rails::Crud::Tools::CrudData.instance.load_crud_data
@@ -46,6 +47,8 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
     it "executes the block and logs operations" do
       # 1.ブロックを実行し、データ更新が正しく行われているかを確認
       expect { |b| instance.log_crud_operations(&b) }.to yield_control
+
+      sleep 1
 
       # 2. crud_fileを読み込み、データが更新されているか確認
       workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
@@ -64,6 +67,8 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
 
     instance.log_crud_operations {}
 
+    sleep 1
+
     last_loaded_time_after = Rails::Crud::Tools::CrudData.instance.last_loaded_time
 
     expect(last_loaded_time_after).to eq(last_loaded_time_before)
@@ -77,6 +82,8 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
     it "executes the block and logs operations for job" do
       # 1.ブロックを実行し、データ更新が正しく行われているかを確認
       expect { |b| instance.log_crud_operations_for_job(&b) }.to yield_control
+
+      sleep 1
 
       # 2. crud_fileを読み込み、データが更新されているか確認
       workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
