@@ -65,7 +65,7 @@ module Rails
           key = sidekiq_job_class
           method = Constants::DEFAULT_METHOD
         else
-          CrudLogger.logger.warn "Unknown method and key detected"
+          CrudLogger.logger.warn "Unknown method and key detected: method=#{method}, key=#{key}"
           return nil
         end
 

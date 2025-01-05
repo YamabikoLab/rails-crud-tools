@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
-require 'fileutils'
+require "zip"
+require "fileutils"
+
 def create_directories
-  @doc_dir = File.join(Dir.pwd, 'doc')
-  @log_dir = File.join(Dir.pwd, 'log')
+  @doc_dir = File.join(Dir.pwd, "doc")
+  @log_dir = File.join(Dir.pwd, "log")
   FileUtils.mkdir_p(@doc_dir)
   FileUtils.mkdir_p(@log_dir)
 end
@@ -22,7 +24,7 @@ def generate_crudconfig
     font_name: Arial
   CONFIG
 
-  File.write('.crudconfig', config_content)
+  File.write(".crudconfig", config_content)
   puts "Generated .crudconfig file"
 end
 
@@ -38,7 +40,7 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
-    File.delete('.crudconfig') if File.exist?('.crudconfig')
+    File.delete(".crudconfig") if File.exist?(".crudconfig")
   end
 
   config.before(:each) do
@@ -123,8 +125,11 @@ RSpec.configure do |config|
     workbook.write(config.crud_file_path)
     timestamp = File.mtime(config.crud_file_path)
     Rails::Crud::Tools::CrudData.instance.instance_variable_set(:@last_loaded_time, timestamp)
+    Rails::Crud::Tools::CrudData.instance.process_id = "test"
     workbook
   end
+
+
 
   private
 

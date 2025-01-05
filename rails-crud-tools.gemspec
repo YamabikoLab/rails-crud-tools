@@ -9,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.email = ["yhijikata@systemlancer.com"]
 
   spec.summary = "A crud diagram is created simply by manipulating the screen."
-  spec.description = 'This gem provides CRUD functionality for Rails applications.'
+  spec.description = "This gem provides CRUD functionality for Rails applications."
   spec.homepage = "https://github.com/YamabikoLab"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/YamabikoLab/rails-crud-tools"
@@ -29,8 +29,9 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "rubyXL", '~> 3.4'
-  spec.add_runtime_dependency "activerecord", '~> 7.0'
+  spec.add_runtime_dependency "activerecord", "~> 7.0"
+  spec.add_runtime_dependency "rubyXL", "~> 3.4"
+  spec.add_runtime_dependency "rubyzip", "~> 2.4"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

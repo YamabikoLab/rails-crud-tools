@@ -24,6 +24,7 @@ module Rails
           return
         end
 
+        CrudData.instance.process_id = "rails-crud-tools-#{Time.now.strftime("%Y%m%d%H%M%S")}"
         CrudData.instance.load_crud_data
         setup_notifications
       end

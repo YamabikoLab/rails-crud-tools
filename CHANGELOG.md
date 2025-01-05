@@ -1,64 +1,55 @@
+## [0.4.2] - 2025-01-06
+- Fixed to update the last modifier of the CRUD file
+- Changed CRUD file saving process to asynchronous processing
+
 ## [0.4.1] - 2025-01-04
-- 初期化時にベースディレクトリが存在しない場合は作成する
+- Create the base directory if it does not exist during initialization
 
 ## [0.4.0] - 2025-01-04
-- セルの値が変化する場合のみ保存するよう修正
-- 設定ファイルにシート名を追加
-- 設定ファイルにフォント名を追加
-- テストコード作成
-- 初期化コマンド追加
-- 設定ファイル作成コマンド追加
+- Fixed to save only when cell values change
+- Added sheet name to configuration file
+- Added font name to configuration file
+- Created test code
+- Added initialization command
+- Added configuration file creation command
 
 ## [0.3.2] - 2025-01-01
-
-- 複数スレッド対応
+- Multi-thread support
 
 ## [0.3.1] - 2024-12-31
-
-- rails-crud-toolsに変更
+- Changed to rails-crud-tools
 
 ## [0.3.0] - 2024-12-30
-
-- ジョブ対応
-- クラッド図生成コマンドの追加
+- Job support
+- Added command to generate CRUD diagrams
 
 ## [0.2.2] - 2024-12-25
-
-- SQL出力のON/OFFを追加
-- サマリーログの改善
+- Added ON/OFF for SQL output
+- Improved summary log
 
 ## [0.2.1] - 2024-12-25
-
-- リファクタリング
+- Refactoring
 
 ## [0.2.0] - 2024-12-25
-
-- api対応
+- API support
 
 ## [0.1.6] - 2024-12-25
-
-- ログ改善
+- Improved logging
 
 ## [0.1.5] - 2024-12-25
-
-- マルチスレッド改善
+- Improved multi-threading
 
 ## [0.1.4] - 2024-12-24
-
-- リファクタリング
+- Refactoring
 
 ## [0.1.3] - 2024-12-24
-
-- bug fix
+- Bug fix
 
 ## [0.1.2] - 2024-12-24
-
-- bug fix
+- Bug fix
 
 ## [0.1.1] - 2024-12-24
-
-- プレビュー版のリリース
+- Preview release
 
 ## [0.1.0] - 2024-12-23
-
 - Initial release
