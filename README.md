@@ -65,7 +65,7 @@ This workbook contains macros that help in managing and visualizing CRUD operati
 
 You can download the `crud_macro.xlsm` file from the following link:
 
-[Download crud_macro.xlsm](https://github.com/YamabikoLab/rails-crud/raw/main/tools/crud_macro.xlsm)
+[Download crud_macro.xlsm](https://github.com/YamabikoLab/rails-crud-tools/raw/main/tools/crud_macro.xlsm)
 
 ## Development
 
