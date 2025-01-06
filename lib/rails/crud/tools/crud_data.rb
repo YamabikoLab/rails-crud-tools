@@ -65,7 +65,7 @@ module Rails
           return unless @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
 
           last_modified_by = get_last_modified_by(config.crud_file_path)
-          CrudLogger.logger.debug "last modified by: #{last_modified_by}. process_id: #{process_id}"
+          CrudLogger.logger.info "last modified by: #{last_modified_by}. process_id: #{process_id}"
           return if process_id == last_modified_by
 
           CrudLogger.logger.info "Reloading CRUD data due to file modification. last_loaded_time = #{@last_loaded_time}"

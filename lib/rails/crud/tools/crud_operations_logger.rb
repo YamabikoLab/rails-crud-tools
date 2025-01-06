@@ -152,9 +152,9 @@ module Rails
               CrudData.instance.workbook.write(crud_file)
               set_last_modified_by(crud_file, CrudData.instance.process_id)
               timestamp = File.mtime(crud_file)
-              CrudLogger.logger.debug "Updated timestamp: #{timestamp}"
               # タイムスタンプを更新する
               CrudData.instance.last_loaded_time = timestamp
+              CrudLogger.logger.info "Updated timestamp: #{timestamp}"
             ensure
               crud_file.flock(File::LOCK_UN)
             end
