@@ -21,7 +21,6 @@ module Rails
         @subscribed = true
       end
 
-
       def self.process_sql(data)
         return unless data[:sql] =~ /(INSERT|UPDATE|DELETE|SELECT)/
 
@@ -34,25 +33,27 @@ module Rails
                     end
 
         match_data = data[:sql].match(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM)\s+`?(\w+)`?/i)
-        if match_data
-          # テーブル名を取得して CRUD 操作に追加
-          table_name = match_data[1]
-          key, method = determine_key_and_method
-          if key.nil? || method.nil?
-            CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
-            return
-          end
-
-          CrudOperations.instance.add_operation(method, key, table_name, operation)
-
-          return unless CrudConfig.instance.sql_logging_enabled
-
-          # SQL ログを出力
-          CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
-        else
+        unless match_data
           # テーブル名が見つからない場合は警告を出力
           CrudLogger.logger.warn "Table name not found in SQL: #{data[:sql]}"
+          return
         end
+
+        # テーブル名を取得して CRUD 操作に追加
+        table_name = match_data[1]
+        key, method = determine_key_and_method
+        if key.nil? || method.nil?
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
+          return
+        end
+
+        CrudOperations.instance.add_operation(method, key, table_name, operation)
+
+        return unless CrudConfig.instance.sql_logging_enabled
+
+        # SQL ログを出力
+        CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
+
       end
 
       # キーとメソッドを決定する
