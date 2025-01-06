@@ -56,6 +56,8 @@ module RailsCrudTools
 
         # データ行を追加
         routes_data.each_with_index do |route, row_index|
+          puts "Debug: route=#{route.inspect}, row_index=#{row_index}"  # デバッグ出力
+
           headers.each_with_index do |header, col_index|
             cell = sheet.add_cell(row_index + 1, col_index, route[header])
             cell.change_font_name(font_name)
