@@ -149,12 +149,13 @@ module Rails
             crud_file.flock(File::LOCK_EX)
             begin
               # Excelファイルを書き込む
-              workbook.calc_properties = RubyXL::CalcProperties.new(full_calc_on_load: true)
-              CrudData.instance.workbook.write(crud_file)
-              set_last_modified_by(crud_file, CrudData.instance.process_id)
+              crudData = CrudData.instance
+              crudData.workbook.calc_properties = RubyXL::CalcProperties.new(full_calc_on_load: true)
+              crudData.workbook.write(crud_file)
+              set_last_modified_by(crud_file, crudData.process_id)
               # タイムスタンプを更新する
               timestamp = File.mtime(crud_file)
-              CrudData.instance.last_loaded_time = timestamp
+              crudData.last_loaded_time = timestamp
               CrudLogger.logger.info "Updated #{CrudConfig.instance.crud_file_path} timestamp: #{timestamp}"
             ensure
               crud_file.flock(File::LOCK_UN)
