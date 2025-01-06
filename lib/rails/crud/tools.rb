@@ -29,6 +29,7 @@ module Rails
         setup_notifications
       end
 
+      setup unless ENV["SKIP_CRUD_SETUP"] == "true"
       setup
     end
   end

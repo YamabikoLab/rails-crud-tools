@@ -29,7 +29,10 @@ module Rails
                 # テーブル名を取得して CRUD 操作に追加
                 table_name = match_data[1]
                 key, method = determine_key_and_method
-                next if key.nil? || method.nil?
+                if key.nil? || method.nil?
+                  warn "Request not found. #{data[:name]} - #{data[:sql]}"
+                  next
+                end
 
                 CrudOperations.instance.add_operation(method, key, table_name, operation)
 
@@ -65,7 +68,6 @@ module Rails
           key = sidekiq_job_class
           method = Constants::DEFAULT_METHOD
         else
-          CrudLogger.logger.warn "Unknown method and key detected: method=#{method}, key=#{key}"
           return nil
         end
 
