@@ -92,7 +92,7 @@ module Rails
         # CRUDシートを取得する
         def get_crud_sheet
           sheet_name = CrudConfig.instance.sheet_name
-          sheet = @workbook[sheet_name]
+          sheet = @workbook[0]
           raise "CRUD sheet '#{sheet_name}' not found" if sheet.nil?
 
           sheet
