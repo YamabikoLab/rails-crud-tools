@@ -150,7 +150,6 @@ module Rails
             begin
               # Excelファイルを書き込む
               crudData = CrudData.instance
-              crudData.workbook.calc_properties = RubyXL::CalcProperties.new(full_calc_on_load: true)
               crudData.workbook.write(crud_file)
               set_last_modified_by(crud_file, crudData.process_id)
               # タイムスタンプを更新する
