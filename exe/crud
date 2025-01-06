@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+ENV["SKIP_CRUD_SETUP"] = "true"
 require "rails/crud/tools/cli"
 
 def display_help

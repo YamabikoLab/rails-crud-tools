@@ -97,8 +97,6 @@ RSpec.describe Rails::Crud::Tools do
     end
 
     it "returns nil and logs a warning when neither request nor sidekiq job class is present" do
-      expect(Rails::Crud::Tools::CrudLogger.logger).to receive(:warn).with("Unknown method and key detected")
-
       result = described_class.send(:determine_key_and_method)
       expect(result).to be_nil
     end

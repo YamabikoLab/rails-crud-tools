@@ -1,3 +1,7 @@
+## [0.4.3] - 2025-01-07
+- Refactored `crud_notifications.rb`.
+- Modified to not execute the `setup` method in `tools.rb` when running commands.
+
 ## [0.4.2] - 2025-01-06
 - Fixed to update the last modifier of the CRUD file
 - Changed CRUD file saving process to asynchronous processing
