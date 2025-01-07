@@ -104,6 +104,62 @@ RSpec.describe Rails::Crud::Tools do
       end
     end
 
+    it "logs SQL queries for complex SELECT with multiple joins and subqueries" do
+      described_class.setup_notifications
+
+      # 複雑なSELECTクエリのテストケース
+      request = double("request", request_method: "GET", params: { "controller" => "reports", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      sql_query = "
+    SELECT
+      a.id AS author_id,
+      a.name AS author_name,
+      b.id AS book_id,
+      b.title AS book_title,
+      p.id AS publisher_id,
+      p.name AS publisher_name,
+      COUNT(r.id) AS review_count,
+      AVG(r.rating) AS average_rating
+    FROM
+      authors a
+      JOIN books b ON a.id = b.author_id
+      LEFT JOIN publishers p ON b.publisher_id = p.id
+      RIGHT JOIN reviews r ON b.id = r.book_id
+    WHERE
+      b.published_date >= '2020-01-01'
+      AND b.published_date < '2021-01-01'
+      AND EXISTS (
+        SELECT 1
+        FROM awards aw
+        JOIN award_categories ac ON aw.category_id = ac.id
+        LEFT JOIN award_judges aj ON aw.judge_id = aj.id
+        RIGHT JOIN award_sponsors asp ON aw.sponsor_id = asp.id
+        WHERE aw.book_id = b.id
+      )
+    GROUP BY
+      a.id, a.name, b.id, b.title, p.id, p.name
+    ORDER BY
+      a.name, b.title
+  "
+
+      select_payload = { sql: sql_query, name: "SQL" }
+      select_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, select_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "authors", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "books", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "publishers", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "reviews", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "awards", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "award_categories", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "award_judges", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "reports#index", "award_sponsors", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", select_payload) do
+        ActiveSupport::Notifications.publish(select_event)
+      end
+    end
+
     it "logs SQL queries and adds operations for INSERT and SELECT" do
       described_class.setup_notifications
 
