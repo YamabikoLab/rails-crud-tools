@@ -141,6 +141,139 @@ RSpec.describe Rails::Crud::Tools do
       end
     end
 
+    it "logs SQL queries for INSERT with the selected results using JOIN and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "create" })
+      Thread.current[:crud_request] = request
+
+      # INSERTクエリのテストケース
+      insert_payload = { sql: "INSERT INTO archived_users (id, name, email) SELECT users.id, users.name, users.email FROM users INNER JOIN orders ON users.id = orders.user_id WHERE users.active = 1", name: "SQL" }
+      insert_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, insert_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "archived_users", "C")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", insert_payload) do
+        ActiveSupport::Notifications.publish(insert_event)
+      end
+    end
+
+    it "logs SQL queries for INSERT with the selected results using comma-separated SELECT and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "create" })
+      Thread.current[:crud_request] = request
+
+      # INSERTクエリのテストケース
+      insert_payload = { sql: "INSERT INTO archived_users (id, name, email) SELECT users.id, users.name, users.email FROM users, orders WHERE users.id = orders.user_id AND users.active = 1", name: "SQL" }
+      insert_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, insert_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "archived_users", "C")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", insert_payload) do
+        ActiveSupport::Notifications.publish(insert_event)
+      end
+    end
+
+    it "logs SQL queries for UPDATE and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "update" })
+      Thread.current[:crud_request] = request
+
+      # UPDATEクエリのテストケース
+      update_payload = { sql: "UPDATE users SET name = 'new_name' WHERE id = 1", name: "SQL" }
+      update_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, update_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#update", "users", "U")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", update_payload) do
+        ActiveSupport::Notifications.publish(update_event)
+      end
+    end
+
+    it "logs SQL queries for DELETE and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "DELETE", params: { "controller" => "users", "action" => "destroy" })
+      Thread.current[:crud_request] = request
+
+      # DELETEクエリのテストケース
+      delete_payload = { sql: "DELETE FROM users WHERE id = 1", name: "SQL" }
+      delete_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, delete_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("DELETE", "users#destroy", "users", "D")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", delete_payload) do
+        ActiveSupport::Notifications.publish(delete_event)
+      end
+    end
+
+    it "logs SQL queries for lowercase SQL statements and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "create" })
+      Thread.current[:crud_request] = request
+
+      # 小文字のINSERTクエリのテストケース
+      insert_payload = { sql: "insert into archived_users (id, name, email) select users.id, users.name, users.email from users where users.active = 1", name: "SQL" }
+      insert_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, insert_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "archived_users", "C")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "users", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", insert_payload) do
+        ActiveSupport::Notifications.publish(insert_event)
+      end
+
+      # 小文字のUPDATEクエリのテストケース
+      update_payload = { sql: "update users set name = 'new_name' where id = 1", name: "SQL" }
+      update_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, update_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#update", "users", "U")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", update_payload) do
+        ActiveSupport::Notifications.publish(update_event)
+      end
+
+      # 小文字のDELETEクエリのテストケース
+      delete_payload = { sql: "delete from users where id = 1", name: "SQL" }
+      delete_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, delete_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#destroy", "users", "D")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", delete_payload) do
+        ActiveSupport::Notifications.publish(delete_event)
+      end
+    end
+
+    it "does not call add_operation for non-CRUD SQL queries" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "create" })
+      Thread.current[:crud_request] = request
+
+      # 非CRUDクエリのテストケース
+      non_crud_payload = { sql: "CREATE TABLE new_table (id INT, name VARCHAR(255))", name: "SQL" }
+      non_crud_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, non_crud_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).not_to receive(:add_operation)
+
+      ActiveSupport::Notifications.instrument("sql.active_record", non_crud_payload) do
+        ActiveSupport::Notifications.publish(non_crud_event)
+      end
+    end
+
     it "warns when table name is not found in SQL" do
       described_class.setup_notifications
 
