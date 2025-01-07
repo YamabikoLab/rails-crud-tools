@@ -210,6 +210,42 @@ RSpec.describe Rails::Crud::Tools do
       end
     end
 
+    it "logs SQL queries for subqueries and adds operations" do
+      described_class.setup_notifications
+
+      # サブクエリのSELECTクエリのテストケース
+      request = double("request", request_method: "GET", params: { "controller" => "users", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      select_payload = { sql: "SELECT * FROM users WHERE id IN (SELECT user_id FROM orders WHERE total > 100)", name: "SQL" }
+      select_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, select_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", select_payload) do
+        ActiveSupport::Notifications.publish(select_event)
+      end
+    end
+
+    it "logs SQL queries for UPDATE with subqueries and adds operations" do
+      described_class.setup_notifications
+
+      # サブクエリのUPDATEクエリのテストケース
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "update" })
+      Thread.current[:crud_request] = request
+
+      update_payload = { sql: "UPDATE users SET name = (SELECT name FROM archived_users WHERE users.id = archived_users.id)", name: "SQL" }
+      update_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, update_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#update", "users", "U")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#update", "archived_users", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", update_payload) do
+        ActiveSupport::Notifications.publish(update_event)
+      end
+    end
+
     it "logs SQL queries for lowercase SQL statements and adds operations" do
       described_class.setup_notifications
 

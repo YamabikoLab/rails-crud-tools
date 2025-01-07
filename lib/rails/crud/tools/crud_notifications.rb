@@ -43,6 +43,21 @@ module Rails
           select_tables.each do |select_table|
             CrudOperations.instance.add_operation(method, key, select_table, "R")
           end
+        elsif data[:sql] =~ /\bUPDATE\b.*\bSET\b.*\bSELECT\b/i
+          # UPDATE ... SET ... SELECT の特別な処理
+          update_table = data[:sql].match(/UPDATE\s+`?(\w+)`?/i)[1]
+          select_tables = data[:sql].scan(/FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+
+          key, method = determine_key_and_method
+          if key.nil? || method.nil?
+            CrudLogger.logger.warn "Request not found. #{data[:sql]}"
+            return
+          end
+
+          CrudOperations.instance.add_operation(method, key, update_table, "U")
+          select_tables.each do |select_table|
+            CrudOperations.instance.add_operation(method, key, select_table, "R")
+          end
         else
           operation = if (match = data[:sql].match(/\A\s*(INSERT|UPDATE|DELETE|SELECT)/i))
                         case match[1].upcase
