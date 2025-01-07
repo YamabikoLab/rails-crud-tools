@@ -1,4 +1,6 @@
-require 'active_support/notifications'
+# frozen_string_literal: true
+
+require "active_support/notifications"
 
 # Notification を使用して SQL クエリを監視するためのモジュール
 module Rails
@@ -12,7 +14,7 @@ module Rails
 
         if CrudConfig.instance.enabled
           # SQL クエリを監視する
-          ActiveSupport::Notifications.subscribe(/sql.active_record/) do |name, started, finished, unique_id, data|
+          ActiveSupport::Notifications.subscribe(/sql.active_record/) do |_name, _started, _finished, _unique_id, data|
             process_sql(data)
           end
         end
@@ -21,18 +23,98 @@ module Rails
         @subscribed = true
       end
 
-      def self.process_sql(data)
-        return unless data[:sql] =~ /(INSERT|UPDATE|DELETE|SELECT)/
+      OPERATION_UNKNOWN = "Unknown"
 
-        operation = case ::Regexp.last_match(1)
-                    when "INSERT" then "C"
-                    when "SELECT" then "R"
-                    when "UPDATE" then "U"
-                    when "DELETE" then "D"
-                    else "Unknown"
+      def self.process_sql(data)
+        return unless data[:sql] =~ /\A\s*(INSERT|UPDATE|DELETE|SELECT)/i
+
+        case data[:sql]
+        when /\bINSERT INTO\b.*\bSELECT\b/i
+          handle_insert_select(data)
+        when /\bUPDATE\b.*\bSET\b.*\bSELECT\b/i
+          handle_update_select(data)
+        when /\bDELETE\b.*\bEXISTS\b.*\bSELECT\b/i
+          handle_delete_select(data)
+        else
+          handle_general_sql(data)
+        end
+
+        return unless CrudConfig.instance.sql_logging_enabled
+
+        # SQL ログを出力
+        CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
+      end
+
+      def self.handle_insert_select(data)
+        # INSERT INTO ... SELECT の特別な処理
+        insert_table = data[:sql].match(/INSERT INTO\s+`?(\w+)`?/i)[1]
+        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact.uniq
+
+        key, method = determine_key_and_method
+        if key.nil? || method.nil?
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
+          return
+        end
+
+        CrudOperations.instance.add_operation(method, key, insert_table, "C")
+        select_tables.each do |select_table|
+          CrudOperations.instance.add_operation(method, key, select_table, "R")
+        end
+      end
+
+      def self.handle_update_select(data)
+        # UPDATE ... SET ... SELECT の特別な処理
+        update_table = data[:sql].match(/UPDATE\s+`?(\w+)`?/i)[1]
+        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact.uniq
+
+        key, method = determine_key_and_method
+        if key.nil? || method.nil?
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
+          return
+        end
+
+        CrudOperations.instance.add_operation(method, key, update_table, "U")
+        select_tables.each do |select_table|
+          CrudOperations.instance.add_operation(method, key, select_table, "R")
+        end
+      end
+
+      def self.handle_delete_select(data)
+        # DELETE ... WHERE EXISTS ... SELECT の特別な処理
+        delete_table = data[:sql].match(/DELETE FROM\s+`?(\w+)`?/i)[1]
+        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact.uniq
+
+        key, method = determine_key_and_method
+        if key.nil? || method.nil?
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
+          return
+        end
+
+        CrudOperations.instance.add_operation(method, key, delete_table, "D")
+        select_tables.each do |select_table|
+          CrudOperations.instance.add_operation(method, key, select_table, "R")
+        end
+      end
+
+      def self.handle_general_sql(data)
+        operation = if (match = data[:sql].match(/\A\s*(INSERT|UPDATE|DELETE|SELECT)/i))
+                      case match[1].upcase
+                      when "INSERT" then "C"
+                      when "SELECT" then "R"
+                      when "UPDATE" then "U"
+                      when "DELETE" then "D"
+                      else OPERATION_UNKNOWN
+                      end
+                    else
+                      OPERATION_UNKNOWN
                     end
 
-        table_names = data[:sql].scan(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM|JOIN)\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*/i).flatten.compact
+        if operation == OPERATION_UNKNOWN
+          warn "Warning: Unknown SQL operation. #{data[:name]} - #{data[:sql]}"
+          return
+        end
+
+        table_names = data[:sql].scan(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM|JOIN)\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*/i).flatten.compact.uniq
         if table_names.empty?
           # テーブル名が見つからない場合は警告を出力
           CrudLogger.logger.warn "Table name not found in SQL: #{data[:sql]}"
@@ -49,14 +131,7 @@ module Rails
         table_names.each do |table_name|
           CrudOperations.instance.add_operation(method, key, table_name, operation)
         end
-
-        return unless CrudConfig.instance.sql_logging_enabled
-
-        # SQL ログを出力
-        CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
-
       end
-
       # キーとメソッドを決定する
       def self.determine_key_and_method
         request = Thread.current[:crud_request]
@@ -64,8 +139,8 @@ module Rails
 
         if request
           method = request.request_method
-          controller = request.params['controller']
-          action = request.params['action']
+          controller = request.params["controller"]
+          action = request.params["action"]
           key = "#{controller}##{action}"
         elsif sidekiq_job_class
           key = sidekiq_job_class
@@ -76,7 +151,6 @@ module Rails
 
         [key, method]
       end
-
     end
   end
 end
