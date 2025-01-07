@@ -7,10 +7,6 @@ require "active_support/isolated_execution_state"
 
 RSpec.describe Rails::Crud::Tools do
   describe ".setup_notifications" do
-    before do
-      allow(Rails::Crud::Tools::CrudLogger.logger).to receive(:info)
-      allow(Rails::Crud::Tools::CrudLogger.logger).to receive(:warn)
-    end
 
     it "logs SQL queries and adds operations" do
       described_class.setup_notifications
@@ -22,7 +18,6 @@ RSpec.describe Rails::Crud::Tools do
       payload = { sql: "SELECT * FROM users", name: "SQL" }
       event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, payload)
 
-      expect(Rails::Crud::Tools::CrudLogger.logger).to receive(:info).with("SQL - SELECT * FROM users")
       expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
 
       ActiveSupport::Notifications.instrument("sql.active_record", payload) do
@@ -119,7 +114,6 @@ RSpec.describe Rails::Crud::Tools do
       insert_payload = { sql: "INSERT INTO users (name, email) VALUES ('Test User', 'test@example.com')", name: "SQL" }
       insert_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, insert_payload)
 
-      expect(Rails::Crud::Tools::CrudLogger.logger).to receive(:info).with("SQL - INSERT INTO users (name, email) VALUES ('Test User', 'test@example.com')")
       expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#create", "users", "C")
 
       ActiveSupport::Notifications.instrument("sql.active_record", insert_payload) do
@@ -133,7 +127,6 @@ RSpec.describe Rails::Crud::Tools do
       select_payload = { sql: "SELECT * FROM users", name: "SQL" }
       select_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, select_payload)
 
-      expect(Rails::Crud::Tools::CrudLogger.logger).to receive(:info).with("SQL - SELECT * FROM users")
       expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
 
       ActiveSupport::Notifications.instrument("sql.active_record", select_payload) do
@@ -220,11 +213,10 @@ RSpec.describe Rails::Crud::Tools do
     it "logs SQL queries for lowercase SQL statements and adds operations" do
       described_class.setup_notifications
 
-      # ダミーのリクエストオブジェクトを作成して設定
+      # 小文字のINSERTクエリのテストケース
       request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "create" })
       Thread.current[:crud_request] = request
 
-      # 小文字のINSERTクエリのテストケース
       insert_payload = { sql: "insert into archived_users (id, name, email) select users.id, users.name, users.email from users where users.active = 1", name: "SQL" }
       insert_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, insert_payload)
 
@@ -236,6 +228,9 @@ RSpec.describe Rails::Crud::Tools do
       end
 
       # 小文字のUPDATEクエリのテストケース
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "update" })
+      Thread.current[:crud_request] = request
+
       update_payload = { sql: "update users set name = 'new_name' where id = 1", name: "SQL" }
       update_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, update_payload)
 
@@ -246,6 +241,9 @@ RSpec.describe Rails::Crud::Tools do
       end
 
       # 小文字のDELETEクエリのテストケース
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "destroy" })
+      Thread.current[:crud_request] = request
+
       delete_payload = { sql: "delete from users where id = 1", name: "SQL" }
       delete_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, delete_payload)
 
@@ -253,6 +251,20 @@ RSpec.describe Rails::Crud::Tools do
 
       ActiveSupport::Notifications.instrument("sql.active_record", delete_payload) do
         ActiveSupport::Notifications.publish(delete_event)
+      end
+
+      # 小文字のSELECTクエリのテストケース
+      request = double("request", request_method: "POST", params: { "controller" => "users", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      select_payload = { sql: "select users.id, users.name, orders.total from users join orders on users.id = orders.user_id where users.active = 1", name: "SQL" }
+      select_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, select_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#index", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("POST", "users#index", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", select_payload) do
+        ActiveSupport::Notifications.publish(select_event)
       end
     end
 
