@@ -32,22 +32,23 @@ module Rails
                     else "Unknown"
                     end
 
-        match_data = data[:sql].match(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM)\s+`?(\w+)`?/i)
-        unless match_data
+        table_names = data[:sql].scan(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM|JOIN)\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*/i).flatten.compact
+        if table_names.empty?
           # テーブル名が見つからない場合は警告を出力
           CrudLogger.logger.warn "Table name not found in SQL: #{data[:sql]}"
           return
         end
 
-        # テーブル名を取得して CRUD 操作に追加
-        table_name = match_data[1]
         key, method = determine_key_and_method
         if key.nil? || method.nil?
           CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
           return
         end
 
-        CrudOperations.instance.add_operation(method, key, table_name, operation)
+        # テーブル名を取得して CRUD 操作に追加
+        table_names.each do |table_name|
+          CrudOperations.instance.add_operation(method, key, table_name, operation)
+        end
 
         return unless CrudConfig.instance.sql_logging_enabled
 
