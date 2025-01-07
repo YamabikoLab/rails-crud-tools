@@ -42,7 +42,7 @@ module Rails
         return unless CrudConfig.instance.sql_logging_enabled
 
         # SQL ログを出力
-        CrudLogger.logger.info (data[:sql]).to_s
+        CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"
       end
 
       def self.handle_insert_select(data)
@@ -52,7 +52,7 @@ module Rails
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
-          CrudLogger.logger.warn "Request not found. #{data[:sql]}"
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
           return
         end
 
@@ -69,7 +69,7 @@ module Rails
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
-          CrudLogger.logger.warn "Request not found. #{data[:sql]}"
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
           return
         end
 
@@ -86,7 +86,7 @@ module Rails
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
-          CrudLogger.logger.warn "Request not found. #{data[:sql]}"
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
           return
         end
 
@@ -110,7 +110,7 @@ module Rails
                     end
 
         if operation == OPERATION_UNKNOWN
-          warn "Warning: Unknown SQL operation. SQL: #{data[:sql]}"
+          warn "Warning: Unknown SQL operation. #{data[:name]} - #{data[:sql]}"
           return
         end
 
@@ -123,7 +123,7 @@ module Rails
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
-          CrudLogger.logger.warn "Request not found. #{data[:sql]}"
+          CrudLogger.logger.warn "Request not found. #{data[:name]} - #{data[:sql]}"
           return
         end
 
