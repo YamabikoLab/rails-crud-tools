@@ -48,7 +48,7 @@ module Rails
       def self.handle_insert_select(data)
         # INSERT INTO ... SELECT の特別な処理
         insert_table = data[:sql].match(/INSERT INTO\s+`?(\w+)`?/i)[1]
-        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact.uniq
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
@@ -65,7 +65,7 @@ module Rails
       def self.handle_update_select(data)
         # UPDATE ... SET ... SELECT の特別な処理
         update_table = data[:sql].match(/UPDATE\s+`?(\w+)`?/i)[1]
-        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact.uniq
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
@@ -82,7 +82,7 @@ module Rails
       def self.handle_delete_select(data)
         # DELETE ... WHERE EXISTS ... SELECT の特別な処理
         delete_table = data[:sql].match(/DELETE FROM\s+`?(\w+)`?/i)[1]
-        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+        select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact.uniq
 
         key, method = determine_key_and_method
         if key.nil? || method.nil?
@@ -114,7 +114,7 @@ module Rails
           return
         end
 
-        table_names = data[:sql].scan(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM|JOIN)\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*/i).flatten.compact
+        table_names = data[:sql].scan(/(?:INSERT INTO|UPDATE|DELETE FROM|FROM|JOIN)\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*/i).flatten.compact.uniq
         if table_names.empty?
           # テーブル名が見つからない場合は警告を出力
           CrudLogger.logger.warn "Table name not found in SQL: #{data[:sql]}"
