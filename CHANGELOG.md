@@ -1,3 +1,6 @@
+## [0.6.0] - 2025-01-08
+- Support for select insert, select update, and select delete
+
 ## [0.5.0] - 2025-01-07
 - Multiple table support
 
