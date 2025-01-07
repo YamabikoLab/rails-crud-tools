@@ -1,3 +1,6 @@
+## [0.5.0] - 2025-01-07
+- Multiple table support
+
 ## [0.4.3] - 2025-01-07
 - Refactored `crud_notifications.rb`.
 - Modified to not execute the `setup` method in `tools.rb` when running commands.

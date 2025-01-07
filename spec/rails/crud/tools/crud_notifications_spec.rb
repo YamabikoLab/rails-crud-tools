@@ -31,6 +31,84 @@ RSpec.describe Rails::Crud::Tools do
 
     end
 
+    it "logs SQL queries with JOIN and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "GET", params: { "controller" => "users", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      # JOINを含むSQLクエリのテストケース
+      join_payload = { sql: "SELECT users.*, orders.* FROM users INNER JOIN orders ON users.id = orders.user_id", name: "SQL" }
+      join_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, join_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", join_payload) do
+        ActiveSupport::Notifications.publish(join_event)
+      end
+    end
+
+    it "logs SQL queries with comma-separated table names and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "GET", params: { "controller" => "users", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      # カンマ区切りのテーブル名を含むSQLクエリのテストケース
+      comma_payload = { sql: "SELECT * FROM users, orders WHERE users.id = orders.user_id", name: "SQL" }
+      comma_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, comma_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", comma_payload) do
+        ActiveSupport::Notifications.publish(comma_event)
+      end
+    end
+
+    it "logs SQL queries with UNION, JOIN, and comma-separated table names and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "GET", params: { "controller" => "users", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      # UNIONを含む複雑なSQLクエリのテストケース
+      union_payload = { sql: "SELECT users.*, orders.* FROM users INNER JOIN orders ON users.id = orders.user_id UNION SELECT products.*, categories.* FROM products, categories WHERE products.category_id = categories.id", name: "SQL" }
+      union_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, union_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "orders", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "products", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "categories", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", union_payload) do
+        ActiveSupport::Notifications.publish(union_event)
+      end
+    end
+
+    it "logs SQL queries with newlines and adds operations" do
+      described_class.setup_notifications
+
+      # ダミーのリクエストオブジェクトを作成して設定
+      request = double("request", request_method: "GET", params: { "controller" => "users", "action" => "index" })
+      Thread.current[:crud_request] = request
+
+      # 改行を含むSQLクエリのテストケース
+      newline_payload = { sql: "SELECT users.*,\norders.*\nFROM users\nINNER JOIN orders ON users.id = orders.user_id", name: "SQL" }
+      newline_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, newline_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "users", "R")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("GET", "users#index", "orders", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", newline_payload) do
+        ActiveSupport::Notifications.publish(newline_event)
+      end
+    end
+
     it "logs SQL queries and adds operations for INSERT and SELECT" do
       described_class.setup_notifications
 
