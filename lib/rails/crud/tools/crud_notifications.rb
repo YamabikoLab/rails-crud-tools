@@ -28,10 +28,11 @@ module Rails
       def self.process_sql(data)
         return unless data[:sql] =~ /\A\s*(INSERT|UPDATE|DELETE|SELECT)/i
 
-        if data[:sql] =~ /\bINSERT INTO\b.*\bSELECT\b/i
+        case data[:sql]
+        when /\bINSERT INTO\b.*\bSELECT\b/i
           # INSERT INTO ... SELECT の特別な処理
           insert_table = data[:sql].match(/INSERT INTO\s+`?(\w+)`?/i)[1]
-          select_tables = data[:sql].scan(/FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+          select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
 
           key, method = determine_key_and_method
           if key.nil? || method.nil?
@@ -43,10 +44,10 @@ module Rails
           select_tables.each do |select_table|
             CrudOperations.instance.add_operation(method, key, select_table, "R")
           end
-        elsif data[:sql] =~ /\bUPDATE\b.*\bSET\b.*\bSELECT\b/i
+        when /\bUPDATE\b.*\bSET\b.*\bSELECT\b/i
           # UPDATE ... SET ... SELECT の特別な処理
           update_table = data[:sql].match(/UPDATE\s+`?(\w+)`?/i)[1]
-          select_tables = data[:sql].scan(/FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+          select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
 
           key, method = determine_key_and_method
           if key.nil? || method.nil?
@@ -55,6 +56,21 @@ module Rails
           end
 
           CrudOperations.instance.add_operation(method, key, update_table, "U")
+          select_tables.each do |select_table|
+            CrudOperations.instance.add_operation(method, key, select_table, "R")
+          end
+        when /\bDELETE\b.*\bEXISTS\b.*\bSELECT\b/i
+          # DELETE ... WHERE EXISTS ... SELECT の特別な処理
+          delete_table = data[:sql].match(/DELETE FROM\s+`?(\w+)`?/i)[1]
+          select_tables = data[:sql].scan(/SELECT .* FROM\s+`?(\w+)`?(?:\s*,\s*`?(\w+)`?)*|JOIN\s+`?(\w+)`?/i).flatten.compact
+
+          key, method = determine_key_and_method
+          if key.nil? || method.nil?
+            CrudLogger.logger.warn "Request not found. #{data[:sql]}"
+            return
+          end
+
+          CrudOperations.instance.add_operation(method, key, delete_table, "D")
           select_tables.each do |select_table|
             CrudOperations.instance.add_operation(method, key, select_table, "R")
           end
@@ -98,7 +114,7 @@ module Rails
         return unless CrudConfig.instance.sql_logging_enabled
 
         # SQL ログを出力
-        CrudLogger.logger.info "#{data[:sql]}"
+        CrudLogger.logger.info (data[:sql]).to_s
       end
 
       # キーとメソッドを決定する

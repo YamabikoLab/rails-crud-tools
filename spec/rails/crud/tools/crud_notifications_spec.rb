@@ -246,6 +246,24 @@ RSpec.describe Rails::Crud::Tools do
       end
     end
 
+    it "logs SQL queries for DELETE with subqueries and adds operations" do
+      described_class.setup_notifications
+
+      # サブクエリのDELETEクエリのテストケース
+      request = double("request", request_method: "DELETE", params: { "controller" => "users", "action" => "destroy" })
+      Thread.current[:crud_request] = request
+
+      delete_payload = { sql: "DELETE FROM users WHERE EXISTS (SELECT 1 FROM archived_users WHERE users.id = archived_users.id)", name: "SQL" }
+      delete_event = ActiveSupport::Notifications::Event.new("sql.active_record", Time.now, Time.now, 1, delete_payload)
+
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("DELETE", "users#destroy", "users", "D")
+      expect_any_instance_of(Rails::Crud::Tools::CrudOperations).to receive(:add_operation).with("DELETE", "users#destroy", "archived_users", "R")
+
+      ActiveSupport::Notifications.instrument("sql.active_record", delete_payload) do
+        ActiveSupport::Notifications.publish(delete_event)
+      end
+    end
+
     it "logs SQL queries for lowercase SQL statements and adds operations" do
       described_class.setup_notifications
 
