@@ -1,3 +1,7 @@
+## [0.6.1] - 2025-01-09
+- Rubocop support 
+- Change of configuration file name
+
 ## [0.6.0] - 2025-01-08
 - Support for select insert, select update, and select delete
 
