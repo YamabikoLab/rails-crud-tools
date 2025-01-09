@@ -85,7 +85,7 @@ module Rails
             doc_props = zipfile.find_entry("docProps/core.xml")
             if doc_props
               content = doc_props.get_input_stream.read
-              last_modified_by = content[%r{<cp:lastModifiedBy>(.*?)<\\\\/cp:lastModifiedBy>}, 1]
+              last_modified_by = content[%r{<cp:lastModifiedBy>(.*?)</cp:lastModifiedBy>}, 1]
             else
               CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
             end
