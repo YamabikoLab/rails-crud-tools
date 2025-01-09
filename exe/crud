@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 ENV["SKIP_CRUD_SETUP"] = "true"
 require "rails/crud/tools/cli"
 
@@ -21,8 +23,8 @@ elsif ARGV.include?("init")
 elsif ARGV.include?("gen_crud")
   RailsCrudTools::CLI.generate_crud_file
 elsif ARGV.include?("gen_config")
-  RailsCrudTools::CLI.generate_crudconfig
+  RailsCrudTools::CLI.generate_crud_config
 else
-  puts "Unknown command: #{ARGV.join(' ')}"
+  puts "Unknown command: #{ARGV.join(" ")}"
   display_help
 end

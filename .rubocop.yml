@@ -3,6 +3,7 @@ AllCops:
   Exclude:
     - 'ide/**/*'
     - 'spec/**/*'
+    - 'lib/rails/crud/tools/cli.rb'
 Style/StringLiterals:
   Enabled: true
   EnforcedStyle: double_quotes
@@ -20,6 +21,14 @@ Metrics/MethodLength:
 Metrics/AbcSize:
   Max: 60
 
+Metrics/CyclomaticComplexity:
+  Max: 20
+
+Metrics/PerceivedComplexity:
+  Max: 20
+
+Metrics/ModuleLength:
+  Max: 120
 Gemspec/AddRuntimeDependency:
   Enabled: true
 Gemspec/DeprecatedAttributeAssignment:

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubyXL"
 require "rubyXL/convenience_methods"
 require "active_record"
@@ -122,7 +124,7 @@ module RailsCrudTools
         puts "Output: #{crud_file}"
       end
 
-      def generate_crudconfig
+      def generate_crud_config
         load_application unless @application_loaded
 
         table_names = ActiveRecord::Base.connection.tables.sort
@@ -146,7 +148,7 @@ module RailsCrudTools
       end
 
       def init
-        generate_crudconfig
+        generate_crud_config
         generate_crud_file
       end
 

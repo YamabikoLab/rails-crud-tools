@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "logger"
 require "singleton"
 
@@ -9,16 +11,14 @@ module Rails
       class CrudLogger
         include Singleton
 
+        attr_reader :logger
+
         def initialize
           @logger = Logger.new("log/crud.log")
         end
 
         def self.logger
           instance.logger
-        end
-
-        def logger
-          @logger
         end
       end
     end

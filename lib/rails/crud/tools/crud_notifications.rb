@@ -133,6 +133,7 @@ module Rails
           CrudOperations.instance.add_operation(method, key, table_name, operation)
         end
       end
+
       # キーとメソッドを決定する
       def self.determine_key_and_method
         request = Thread.current[:crud_request]

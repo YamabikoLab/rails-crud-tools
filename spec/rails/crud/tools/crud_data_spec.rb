@@ -76,13 +76,13 @@ RSpec.describe Rails::Crud::Tools::CrudData do
     end
 
     it "returns the sheet if found" do
-      expect(crud_data.get_crud_sheet).not_to be_nil
+      expect(crud_data.crud_sheet).not_to be_nil
     end
 
     it "raises an error if the sheet is not found" do
       non_existent_sheet_name = "NonExistentSheetName"
       allow(Rails::Crud::Tools::CrudConfig.instance).to receive(:sheet_name).and_return(non_existent_sheet_name)
-      expect { crud_data.get_crud_sheet }.to raise_error("CRUD sheet '#{non_existent_sheet_name}' not found")
+      expect { crud_data.crud_sheet }.to raise_error("CRUD sheet '#{non_existent_sheet_name}' not found")
     end
   end
 end
