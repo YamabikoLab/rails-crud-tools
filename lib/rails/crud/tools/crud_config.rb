@@ -1,49 +1,54 @@
 # frozen_string_literal: true
 
 require "yaml"
+require "singleton"
 
 module Rails
   module Crud
     module Tools
-      # The CrudConfig class is responsible for loading and managing the configuration settings for CRUD operations.
-      # It uses the Singleton pattern to ensure only one instance of the configuration exists.
+      # The CrudConfig class is a singleton class responsible for loading and managing configuration settings from a YAML file (.crudconfig.yml).
+      # It ensures that the configuration is reloaded if the file is updated.
       class CrudConfig
         include Singleton
 
-        attr_reader :enabled, :base_dir, :crud_file, :sheet_name, :method_col, :action_col, :table_start_col, :sql_logging_enabled, :header_bg_color, :font_name, :config_file
+        CONFIG_PATH = File.expand_path(".crudconfig.yml", Dir.pwd)
 
         def initialize
-          @config_file = ".crudconfig.yml"
-          @last_loaded = nil
-          load_config
+          @last_loaded_time = Time.at(0)
+        end
+
+        def self.config_path
+          CONFIG_PATH
+        end
+
+        def config
+          load_config if @config.nil? || config_file_updated?
+          @config
         end
 
         def load_config
-          return unless @last_loaded.nil? || File.mtime(@config_file) > @last_loaded
-          raise "Config file not found: #{@config_file}. Please generate it using `bundle exec crud gen_config`." unless File.exist?(@config_file)
-
-          config = YAML.load_file(@config_file)
-
-          @enabled = config["enabled"]
-          @base_dir = config["base_dir"]
-          @crud_file = config["crud_file"]
-          @sheet_name = config["sheet_name"]
-          @method_col = config["method_col"]
-          @action_col = config["action_col"]
-          @table_start_col = config["table_start_col"]
-          @sql_logging_enabled = config["sql_logging_enabled"]
-          @header_bg_color = config["header_bg_color"]
-          @font_name = config["font_name"]
-
-          @last_loaded = File.mtime(@config_file)
+          @config = deep_convert_to_struct(YAML.load_file(CONFIG_PATH))
+          @last_loaded_time = File.mtime(CONFIG_PATH)
+        rescue Errno::ENOENT
+          raise "Configuration file not found: #{CONFIG_PATH}"
+        rescue Psych::SyntaxError => e
+          raise "YAML syntax error occurred while parsing #{CONFIG_PATH}: #{e.message}"
         end
 
-        def crud_file_path
-          File.join(@base_dir, @crud_file)
+        private
+
+        def config_file_updated?
+          File.mtime(CONFIG_PATH) > @last_loaded_time
         end
 
-        def crud_log_path
-          File.join(@base_dir, @crud_log)
+        # Recursively convert hash to Struct and add crud_file_path method
+        def deep_convert_to_struct(hash)
+          struct_class = Struct.new(*hash.keys.map(&:to_sym)) do
+            def crud_file_path
+              File.join(base_dir, crud_file.file_name)
+            end
+          end
+          struct_class.new(*hash.values.map { |value| value.is_a?(Hash) ? deep_convert_to_struct(value) : value })
         end
       end
     end

@@ -13,7 +13,7 @@ module Rails
         # 既に通知が登録されている場合は処理を中断
         return if @subscribed
 
-        if CrudConfig.instance.enabled
+        if CrudConfig.instance.config.enabled
           # SQL クエリを監視する
           ActiveSupport::Notifications.subscribe(/sql.active_record/) do |_name, _started, _finished, _unique_id, data|
             process_sql(data)
@@ -40,7 +40,7 @@ module Rails
           handle_general_sql(data)
         end
 
-        return unless CrudConfig.instance.sql_logging_enabled
+        return unless CrudConfig.instance.config.sql_logging_enabled
 
         # SQL ログを出力
         CrudLogger.logger.info "#{data[:name]} - #{data[:sql]}"

@@ -51,7 +51,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       sleep 1
 
       # 2. crud_fileを読み込み、データが更新されているか確認
-      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.config.crud_file_path)
       sheet = workbook[0]
       cell = sheet[3][5]
 
@@ -86,7 +86,7 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       sleep 1
 
       # 2. crud_fileを読み込み、データが更新されているか確認
-      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
+      workbook = RubyXL::Parser.parse(Rails::Crud::Tools::CrudConfig.instance.config.crud_file_path)
       sheet = workbook[0]
       cell = sheet[5][7]
 

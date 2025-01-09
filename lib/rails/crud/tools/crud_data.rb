@@ -22,7 +22,7 @@ module Rails
         end
 
         def load_crud_data
-          config = CrudConfig.instance
+          config = CrudConfig.instance.config
           return unless config.enabled
 
           unless File.exist?(config.crud_file_path)
@@ -64,7 +64,7 @@ module Rails
 
         # CRUDデータが更新された場合に再読み込みする
         def reload_if_needed
-          config = CrudConfig.instance
+          config = CrudConfig.instance.config
           return unless config.enabled
 
           return unless @last_loaded_time.nil? || File.mtime(config.crud_file_path) > @last_loaded_time
@@ -96,7 +96,7 @@ module Rails
 
         # CRUDシートを取得する
         def crud_sheet
-          sheet_name = CrudConfig.instance.sheet_name
+          sheet_name = CrudConfig.instance.config.crud_file.sheet_name
           sheet = @workbook[sheet_name]
           raise "CRUD sheet '#{sheet_name}' not found" if sheet.nil?
 

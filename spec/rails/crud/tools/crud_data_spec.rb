@@ -32,17 +32,17 @@ RSpec.describe Rails::Crud::Tools::CrudData do
     end
 
     it "raises an error if method column is not found" do
-      allow(Rails::Crud::Tools::CrudConfig.instance).to receive(:method_col).and_return("NonExistentColumn")
+      allow(Rails::Crud::Tools::CrudConfig.instance.config).to receive(:method_col).and_return("NonExistentColumn")
       expect { crud_data.load_crud_data }.to raise_error("Method column not found")
     end
 
     it "raises an error if action column is not found" do
-      allow(Rails::Crud::Tools::CrudConfig.instance).to receive(:action_col).and_return("NonExistentColumn")
+      allow(Rails::Crud::Tools::CrudConfig.instance.config).to receive(:action_col).and_return("NonExistentColumn")
       expect { crud_data.load_crud_data }.to raise_error("Action column not found")
     end
 
     it "raises an error if table start column is not found" do
-      allow(Rails::Crud::Tools::CrudConfig.instance).to receive(:table_start_col).and_return("NonExistentColumn")
+      allow(Rails::Crud::Tools::CrudConfig.instance.config).to receive(:table_start_col).and_return("NonExistentColumn")
       expect { crud_data.load_crud_data }.to raise_error("Table start column not found")
     end
   end
@@ -59,7 +59,7 @@ RSpec.describe Rails::Crud::Tools::CrudData do
     it "does not reload CRUD data if the file has not been modified" do
       crud_data.load_crud_data
       # ファイルのタイムスタンプを取得
-      file_mtime = File.mtime(Rails::Crud::Tools::CrudConfig.instance.crud_file_path)
+      file_mtime = File.mtime(Rails::Crud::Tools::CrudConfig.instance.config.crud_file_path)
 
       # ファイルのタイムスタンプよりも1秒前の日時を設定
       allow(File).to receive(:mtime).and_return(file_mtime - 1)
@@ -81,7 +81,7 @@ RSpec.describe Rails::Crud::Tools::CrudData do
 
     it "raises an error if the sheet is not found" do
       non_existent_sheet_name = "NonExistentSheetName"
-      allow(Rails::Crud::Tools::CrudConfig.instance).to receive(:sheet_name).and_return(non_existent_sheet_name)
+      allow(Rails::Crud::Tools::CrudConfig.instance.config.crud_file).to receive(:sheet_name).and_return(non_existent_sheet_name)
       expect { crud_data.crud_sheet }.to raise_error("CRUD sheet '#{non_existent_sheet_name}' not found")
     end
   end
