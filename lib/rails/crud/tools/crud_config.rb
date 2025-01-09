@@ -10,7 +10,7 @@ module Rails
       class CrudConfig
         include Singleton
 
-        attr_accessor :enabled, :base_dir, :crud_file, :sheet_name, :method_col, :action_col, :table_start_col, :sql_logging_enabled, :header_bg_color, :font_name
+        attr_reader :enabled, :base_dir, :sheet_name, :method_col, :action_col, :table_start_col, :sql_logging_enabled, :header_bg_color, :font_name, :crud_file
 
         def initialize
           @config_file = ".crudconfig.yml"
