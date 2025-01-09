@@ -1,6 +1,6 @@
 FROM ruby:3.1.4
 
-ARG IDEURL=https://download.jetbrains.com/ruby/RubyMine-2024.3.1.tar.gz
+ARG IDEURL=https://download.jetbrains.com/ruby/RubyMine-2024.3.1.1.tar.gz
 
 RUN apt-get update -qq && apt-get install -y \
   build-essential \

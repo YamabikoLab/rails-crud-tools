@@ -1,9 +1,11 @@
-require 'logger'
-require 'singleton'
+require "logger"
+require "singleton"
 
 module Rails
   module Crud
     module Tools
+      # The CrudLogger class is responsible for logging CRUD operations to a file.
+      # It uses the Singleton pattern to ensure only one instance of the logger exists.
       class CrudLogger
         include Singleton
 

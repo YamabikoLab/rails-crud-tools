@@ -1,11 +1,15 @@
-require 'rails/railtie'
-require_relative 'crud_operations_logger'
+# frozen_string_literal: true
+
+require "rails/railtie"
+require_relative "crud_operations_logger"
 
 module Rails
   module Crud
     module Tools
+      # The Railtie class is responsible for adding custom initialization code to a Rails application.
+      # It includes filters for logging CRUD operations in controllers and jobs.
       class Railtie < ::Rails::Railtie
-        initializer 'rails-crud.add_after_action' do
+        initializer "rails-crud.add_after_action" do
           ActiveSupport.on_load(:action_controller) do
             include Rails::Crud::Tools::OperationsLogger
 

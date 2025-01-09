@@ -5,7 +5,8 @@ require_relative "constants"
 module Rails
   module Crud
     module Tools
-      # このクラスは、CRUDファイルからデータを読み込むためのクラスです。
+      # The CrudData class is responsible for loading and managing CRUD data from a file.
+      # It includes methods to load data, reload if needed, and retrieve specific information from the data.
       class CrudData
         include Singleton
 

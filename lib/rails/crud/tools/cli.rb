@@ -1,10 +1,12 @@
 require "rubyXL"
-require 'rubyXL/convenience_methods'
-require 'active_record'
-require 'yaml'
-require 'erb'
+require "rubyXL/convenience_methods"
+require "active_record"
+require "yaml"
+require "erb"
 
 module RailsCrudTools
+  # The CLI class provides command-line interface methods for generating CRUD files and configurations.
+  # It includes methods to generate CRUD files, generate configuration files, and initialize the application.
   class CLI
     @application_loaded = false
     class << self
@@ -139,7 +141,7 @@ module RailsCrudTools
           font_name: Arial
         CONFIG
 
-        File.write('.crudconfig', config_content)
+        File.write(".crudconfig", config_content)
         puts "Generated .crudconfig file"
       end
 

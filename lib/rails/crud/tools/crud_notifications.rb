@@ -2,9 +2,10 @@
 
 require "active_support/notifications"
 
-# Notification を使用して SQL クエリを監視するためのモジュール
 module Rails
   module Crud
+    # The Tools module provides utility methods for setting up notifications and processing SQL queries.
+    # It includes methods to subscribe to ActiveSupport notifications and handle different types of SQL operations.
     module Tools
       def self.setup_notifications
         # 初回呼び出し時に @subscribed を false に設定

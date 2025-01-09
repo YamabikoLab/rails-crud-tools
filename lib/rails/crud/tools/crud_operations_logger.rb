@@ -2,10 +2,11 @@ require "zip"
 require_relative "crud_logger"
 require_relative "constants"
 
-# ログ出力を行うモジュール
 module Rails
   module Crud
     module Tools
+      # The OperationsLogger module is responsible for logging CRUD operations in controllers and jobs.
+      # It provides methods to log request and job details, and to write CRUD operations to an Excel file.
       module OperationsLogger
 
         # コントローラのCRUD操作をログ出力する
@@ -139,9 +140,7 @@ module Rails
             update_crud_file
           rescue StandardError => e
             CrudLogger.logger.error "Failed to update #{CrudConfig.instance.crud_file_path}: #{e.message}"
-
           end
-
         end
 
         def update_crud_file
@@ -160,7 +159,6 @@ module Rails
             end
           end
         end
-
       end
     end
   end

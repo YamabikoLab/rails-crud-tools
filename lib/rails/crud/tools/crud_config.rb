@@ -3,6 +3,8 @@ require "yaml"
 module Rails
   module Crud
     module Tools
+      # The CrudConfig class is responsible for loading and managing the configuration settings for CRUD operations.
+      # It uses the Singleton pattern to ensure only one instance of the configuration exists.
       class CrudConfig
         include Singleton
 

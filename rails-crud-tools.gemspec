@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "./lib/rails/crud/tools/version"
+require_relative "lib/rails/crud/tools/version"
 
 Gem::Specification.new do |spec|
   spec.name = "rails-crud-tools"
@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "A crud diagram is created simply by manipulating the screen."
   spec.description = "This gem provides CRUD functionality for Rails applications."
-  spec.homepage = "https://github.com/YamabikoLab"
+  spec.homepage = "https://github.com/YamabikoLab/rails-crud-tools"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
 
@@ -29,10 +29,11 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "activerecord", "~> 7.0"
-  spec.add_runtime_dependency "rubyXL", "~> 3.4"
-  spec.add_runtime_dependency "rubyzip", "~> 2.4"
+  spec.add_dependency "activerecord", "~> 7.0"
+  spec.add_dependency "rubyXL", "~> 3.4"
+  spec.add_dependency "rubyzip", "~> 2.4"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
 end
