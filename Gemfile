@@ -16,4 +16,3 @@ gem "rubyzip", "~> 2.4"
 gem "rails"
 
 gem "simplecov"
-
