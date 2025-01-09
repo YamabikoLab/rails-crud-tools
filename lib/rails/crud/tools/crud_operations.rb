@@ -1,9 +1,13 @@
-require_relative 'crud_logger'
-require_relative 'constants'
+# frozen_string_literal: true
+
+require_relative "crud_logger"
+require_relative "constants"
 
 module Rails
   module Crud
     module Tools
+      # The CrudOperations class is responsible for managing CRUD operations for different tables.
+      # It stores operations in a nested hash structure and provides methods to add and log operations.
       class CrudOperations
         include Singleton
 
@@ -34,14 +38,14 @@ module Rails
           CrudLogger.logger.info "\nSummary: Method: #{method}, Key: #{key}"
 
           @table_operations[method][key].each do |table_name, operations|
-            CrudLogger.logger.info "#{table_name} - #{operations.join(', ')}"
+            CrudLogger.logger.info "#{table_name} - #{operations.join(", ")}"
           end
-
         end
 
         def table_operations_present?(method, key)
           return false if @table_operations[method].nil?
           return false if @table_operations[method][key].nil?
+
           !@table_operations[method][key].empty?
         end
       end

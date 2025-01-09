@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "zip"
 require_relative "crud_logger"
 require_relative "constants"
@@ -5,7 +7,8 @@ require_relative "constants"
 module Rails
   module Crud
     module Tools
-      # このクラスは、CRUDファイルからデータを読み込むためのクラスです。
+      # The CrudData class is responsible for loading and managing CRUD data from a file.
+      # It includes methods to load data, reload if needed, and retrieve specific information from the data.
       class CrudData
         include Singleton
 
@@ -29,7 +32,7 @@ module Rails
 
           @workbook = RubyXL::Parser.parse(config.crud_file_path)
           @last_loaded_time = File.mtime(config.crud_file_path)
-          sheet = get_crud_sheet
+          sheet = crud_sheet
           headers = sheet[0].cells.map(&:value)
 
           method_col_index = headers.index(config.method_col)
@@ -49,7 +52,9 @@ module Rails
 
             method = row[method_col_index]&.value.to_s.strip
             method = Constants::DEFAULT_METHOD if method.empty?
-            action = row[action_col_index]&.value&.split&.first
+            value = row[action_col_index]&.value
+            split_value = value&.split
+            action = split_value&.first
             next if action.nil?
 
             @crud_rows[method] ||= {}
@@ -80,7 +85,7 @@ module Rails
             doc_props = zipfile.find_entry("docProps/core.xml")
             if doc_props
               content = doc_props.get_input_stream.read
-              last_modified_by = content[/\<cp:lastModifiedBy\>(.*?)\<\/cp:lastModifiedBy\>/, 1]
+              last_modified_by = content[%r{<cp:lastModifiedBy>(.*?)<\\\\/cp:lastModifiedBy>}, 1]
             else
               CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
             end
@@ -90,7 +95,7 @@ module Rails
         end
 
         # CRUDシートを取得する
-        def get_crud_sheet
+        def crud_sheet
           sheet_name = CrudConfig.instance.sheet_name
           sheet = @workbook[sheet_name]
           raise "CRUD sheet '#{sheet_name}' not found" if sheet.nil?

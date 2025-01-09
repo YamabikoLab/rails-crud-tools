@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rubyXL"
 require "rubyXL/convenience_methods/cell"
 require "rubyXL/convenience_methods/color"
@@ -12,15 +14,17 @@ require_relative "tools/crud_data"
 
 module Rails
   module Crud
+    # The Tools module provides utility methods for setting up notifications and processing SQL queries.
+    # It includes methods to subscribe to ActiveSupport notifications and handle different types of SQL operations.
     module Tools
-      def self.setup()
-        unless File.exist?(".crudconfig")
-          puts "The .crudconfig file is required. Please run `bundle exec crud init`."
+      def self.setup
+        unless File.exist?(CrudConfig.instance.config_file)
+          puts "The .crudconfig.yml file is required. Please run `bundle exec crud init`."
           return
         end
 
         unless File.exist?(CrudConfig.instance.crud_file_path)
-          puts "The CRUD file is required. Please run `bundle exec crud gen_crud`."
+          puts "The CRUD file is required. Please run `bundle exec crud gen crud`."
           return
         end
 

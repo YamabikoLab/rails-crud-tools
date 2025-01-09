@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require "zip"
 require_relative "crud_logger"
 require_relative "constants"
 
-# ログ出力を行うモジュール
 module Rails
   module Crud
     module Tools
+      # The OperationsLogger module is responsible for logging CRUD operations in controllers and jobs.
+      # It provides methods to log request and job details, and to write CRUD operations to an Excel file.
       module OperationsLogger
-
         # コントローラのCRUD操作をログ出力する
         def log_crud_operations
           if CrudConfig.instance.enabled
@@ -41,11 +43,9 @@ module Rails
 
           yield
 
-          if CrudConfig.instance.enabled
-            if CrudOperations.instance.table_operations_present?(Constants::DEFAULT_METHOD, key)
-              CrudOperations.instance.log_operations(Constants::DEFAULT_METHOD, key)
-              log_and_write_operations(Constants::DEFAULT_METHOD, key)
-            end
+          if CrudConfig.instance.enabled && CrudOperations.instance.table_operations_present?(Constants::DEFAULT_METHOD, key)
+            CrudOperations.instance.log_operations(Constants::DEFAULT_METHOD, key)
+            log_and_write_operations(Constants::DEFAULT_METHOD, key)
           end
         ensure
           Thread.current[:crud_sidekiq_job_class] = nil
@@ -93,7 +93,7 @@ module Rails
         # ExcelファイルにCRUD操作を書き込む
         def log_and_write_operations(method, key)
           CrudData.instance.reload_if_needed
-          sheet = CrudData.instance.get_crud_sheet
+          sheet = CrudData.instance.crud_sheet
 
           # フラグを初期化
           contents_changed = false
@@ -139,9 +139,7 @@ module Rails
             update_crud_file
           rescue StandardError => e
             CrudLogger.logger.error "Failed to update #{CrudConfig.instance.crud_file_path}: #{e.message}"
-
           end
-
         end
 
         def update_crud_file
@@ -160,7 +158,6 @@ module Rails
             end
           end
         end
-
       end
     end
   end
