@@ -24,8 +24,8 @@ def generate_crudconfig
     font_name: Arial
   CONFIG
 
-  File.write(".crudconfig", config_content)
-  puts "Generated .crudconfig file"
+  File.write(".crudconfig.yml", config_content)
+  puts "Generated .crudconfig.yml file"
 end
 
 RSpec.configure do |config|
