@@ -18,12 +18,12 @@ module Rails
     # It includes methods to subscribe to ActiveSupport notifications and handle different types of SQL operations.
     module Tools
       def self.setup
-        unless File.exist?(CrudConfig.instance.config_file)
+        unless File.exist?(CrudConfig.config_path)
           puts "The .crudconfig.yml file is required. Please run `bundle exec crud init`."
           return
         end
 
-        unless File.exist?(CrudConfig.instance.crud_file_path)
+        unless File.exist?(CrudConfig.instance.config.crud_file_path)
           puts "The CRUD file is required. Please run `bundle exec crud gen crud`."
           return
         end

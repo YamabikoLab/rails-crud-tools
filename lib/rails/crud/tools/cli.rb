@@ -11,14 +11,15 @@ module RailsCrudTools
   # It includes methods to generate CRUD files, generate configuration files, and initialize the application.
   class CLI
     @application_loaded = false
+
     class << self
       def generate_crud_file
         load_application unless @application_loaded
 
         # 1. `bundle exec rails routes --expanded`の結果を取得
         routes_output = `bundle exec rails routes --expanded`
-        config = Rails::Crud::Tools::CrudConfig.instance
-        font_name = config.font_name
+        config = Rails::Crud::Tools::CrudConfig.instance.config
+        font_name = config.crud_file.font_name
 
         # 2. 取得した結果を区切り文字で分割
         routes_lines = routes_output.split("\n").reject(&:empty?)
@@ -42,7 +43,7 @@ module RailsCrudTools
         # 4. `rubyXL`を使って`xlsx`ファイルに書き込み
         workbook = RubyXL::Workbook.new
         sheet = workbook[0]
-        sheet.sheet_name = config.sheet_name
+        sheet.sheet_name = config.crud_file.sheet_name
 
         # ヘッダー行を追加
         headers = %w[Prefix Verb URI Controller#Action crud_count] + table_names
@@ -100,7 +101,7 @@ module RailsCrudTools
 
         # ヘッダーの背景色を設定
         (0..headers.length - 1).each do |col_index|
-          sheet[0][col_index].change_fill(config.header_bg_color)
+          sheet[0][col_index].change_fill(config.crud_file.header_bg_color)
         end
 
         # 列幅を設定
@@ -133,14 +134,15 @@ module RailsCrudTools
         config_content = <<~CONFIG
           enabled: true
           base_dir: doc
-          crud_file: crud.xlsx
-          sheet_name: CRUD
+          crud_file:
+            file_name: crud.xlsx
+            sheet_name: CRUD
+            header_bg_color: 00FFCC
+            font_name: Arial
           method_col: Verb
           action_col: Controller#Action
           table_start_col: #{table_start_col}
           sql_logging_enabled: true
-          header_bg_color: 00FFCC
-          font_name: Arial
         CONFIG
 
         File.write(".crudconfig.yml", config_content)

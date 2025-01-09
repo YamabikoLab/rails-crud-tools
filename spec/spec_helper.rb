@@ -14,14 +14,15 @@ def generate_crudconfig
   config_content = <<~CONFIG
     enabled: true
     base_dir: doc
-    crud_file: crud.xlsx
-    sheet_name: CRUD
+    crud_file:
+      file_name: crud.xlsx
+      sheet_name: CRUD
+      header_bg_color: 00FFCC
+      font_name: Arial
     method_col: Verb
     action_col: Controller#Action
     table_start_col: active_admin_comments
     sql_logging_enabled: true
-    header_bg_color: 00FFCC
-    font_name: Arial
   CONFIG
 
   File.write(".crudconfig.yml", config_content)
@@ -40,7 +41,7 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
-    File.delete(".crudconfig") if File.exist?(".crudconfig")
+    File.delete(".crudconfig.yml") if File.exist?(".crudconfig.yml")
   end
 
   config.before(:each) do
@@ -60,8 +61,8 @@ RSpec.configure do |config|
   def workbook
     workbook = RubyXL::Workbook.new
     sheet = workbook[0]
-    config = Rails::Crud::Tools::CrudConfig.instance
-    sheet.sheet_name = config.sheet_name
+    config = Rails::Crud::Tools::CrudConfig.instance.config
+    sheet.sheet_name = config.crud_file.sheet_name
     # ヘッダー行
     sheet.add_cell(0, 0, "Prefix")
     sheet.add_cell(0, 1, "Verb")

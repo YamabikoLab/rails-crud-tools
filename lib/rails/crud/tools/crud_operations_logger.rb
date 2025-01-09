@@ -12,7 +12,8 @@ module Rails
       module OperationsLogger
         # コントローラのCRUD操作をログ出力する
         def log_crud_operations
-          if CrudConfig.instance.enabled
+          config = CrudConfig.instance.config
+          if config.enabled
             CrudConfig.instance.load_config
             log_request_details
             Thread.current[:crud_request] = request
@@ -20,7 +21,7 @@ module Rails
 
           yield
 
-          if CrudConfig.instance.enabled
+          if config.enabled
             key = "#{controller_path}##{action_name}"
             method = request.request_method
             if CrudOperations.instance.table_operations_present?(method, key)
@@ -34,7 +35,8 @@ module Rails
 
         # ジョブのCRUD操作をログ出力する
         def log_crud_operations_for_job
-          if CrudConfig.instance.enabled
+          config = CrudConfig.instance.config
+          if config.enabled
             CrudConfig.instance.load_config
             log_job_details
             key = self.class.name
@@ -43,7 +45,7 @@ module Rails
 
           yield
 
-          if CrudConfig.instance.enabled && CrudOperations.instance.table_operations_present?(Constants::DEFAULT_METHOD, key)
+          if config.enabled && CrudOperations.instance.table_operations_present?(Constants::DEFAULT_METHOD, key)
             CrudOperations.instance.log_operations(Constants::DEFAULT_METHOD, key)
             log_and_write_operations(Constants::DEFAULT_METHOD, key)
           end
@@ -138,12 +140,12 @@ module Rails
           Thread.new do
             update_crud_file
           rescue StandardError => e
-            CrudLogger.logger.error "Failed to update #{CrudConfig.instance.crud_file_path}: #{e.message}"
+            CrudLogger.logger.error "Failed to update #{CrudConfig.instance.config.crud_file_path}: #{e.message}"
           end
         end
 
         def update_crud_file
-          File.open(CrudConfig.instance.crud_file_path, "r+") do |crud_file|
+          File.open(CrudConfig.instance.config.crud_file_path, "r+") do |crud_file|
             crud_file.flock(File::LOCK_EX)
             begin
               # Excelファイルを書き込む
