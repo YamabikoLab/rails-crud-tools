@@ -1,3 +1,7 @@
+## [0.6.10] - 2025-01-11 
+- Required ruby version up
+- Change configuration file to yaml format
+
 ## [0.6.9] - 2025-01-10
 - refactoring gem dependency
 
