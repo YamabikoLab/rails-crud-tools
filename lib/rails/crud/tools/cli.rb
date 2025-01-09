@@ -101,7 +101,7 @@ module RailsCrudTools
 
         # ヘッダーの背景色を設定
         (0..headers.length - 1).each do |col_index|
-          sheet[0][col_index].change_fill(config.header_bg_color)
+          sheet[0][col_index].change_fill(config.crud_file.header_bg_color)
         end
 
         # 列幅を設定
