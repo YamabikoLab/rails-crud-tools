@@ -27,13 +27,13 @@ $ gem install rails-crud-tools
 ## Usage
 
 ### Setup
-This command will generate the **doc/crud.xlsx** file and the **.crudconfig** file.
+This command will generate the **doc/crud.xlsx** file and the **.crudconfig.yml** file.
 
 ```sh
 $ bundle exec crud init
 ```
 
-.crudconfig
+.crudconfig.yml
 ```yaml
 enabled: true # Enables or disables the CRUD tools functionality
 base_dir: doc # The base directory where the CRUD files will be stored

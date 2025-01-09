@@ -13,7 +13,7 @@ module Rails
         attr_accessor :enabled, :base_dir, :crud_file, :sheet_name, :method_col, :action_col, :table_start_col, :sql_logging_enabled, :header_bg_color, :font_name
 
         def initialize
-          @config_file = ".crudconfig"
+          @config_file = ".crudconfig.yml"
           @last_loaded = nil
           load_config
         end

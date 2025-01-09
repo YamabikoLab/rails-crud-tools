@@ -10,8 +10,8 @@ def display_help
 
     Commands:
       init    Initialize by generating CRUD and config files
-      gen_crud     Generate CRUD
-      gen_config   Generate config
+      gen crud    Generate CRUD file
+      gen config  Generate config file
       help    Display this help message
   HELP
 end
@@ -20,9 +20,9 @@ if ARGV.empty? || ARGV.include?("help")
   display_help
 elsif ARGV.include?("init")
   RailsCrudTools::CLI.init
-elsif ARGV.include?("gen_crud")
+elsif ARGV == %w[gen crud]
   RailsCrudTools::CLI.generate_crud_file
-elsif ARGV.include?("gen_config")
+elsif ARGV == %w[gen config]
   RailsCrudTools::CLI.generate_crud_config
 else
   puts "Unknown command: #{ARGV.join(" ")}"
