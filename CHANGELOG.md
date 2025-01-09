@@ -1,3 +1,6 @@
+## [0.6.3] - 2025-01-09
+- refactoring gem dependency
+
 ## [0.6.2] - 2025-01-09
 - bug fix:uninitialized constant RubyXL::Cell
 
