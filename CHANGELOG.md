@@ -1,3 +1,6 @@
+## [0.6.2] - 2025-01-09
+- bug fix:uninitialized constant RubyXL::Cell
+
 ## [0.6.1] - 2025-01-09
 - Rubocop support 
 - Change of configuration file name
