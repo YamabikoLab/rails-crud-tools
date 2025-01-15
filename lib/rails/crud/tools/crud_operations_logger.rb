@@ -3,6 +3,7 @@
 require "zip"
 require_relative "crud_logger"
 require_relative "constants"
+require "monitor"
 
 module Rails
   module Crud
@@ -11,7 +12,7 @@ module Rails
       # It provides methods to log request and job details, and to write CRUD operations to an Excel file.
       module OperationsLogger
         def initialize
-          @mutex = Mutex.new
+          @monitor = Monitor.new
         end
 
         # コントローラのCRUD操作をログ出力する
@@ -98,7 +99,7 @@ module Rails
 
         # ExcelファイルにCRUD操作を書き込む
         def log_and_write_operations(method, key)
-          @mutex.synchronize do
+          @monitor.synchronize do
             CrudData.instance.reload_if_needed
           end
 
@@ -152,7 +153,7 @@ module Rails
         end
 
         def update_crud_file
-          @mutex.synchronize do
+          @monitor.synchronize do
             crud_file = CrudConfig.instance.config.crud_file_path
             # Excelファイルを書き込む
             CrudData.instance.workbook.write(crud_file)
