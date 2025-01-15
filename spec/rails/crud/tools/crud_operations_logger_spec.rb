@@ -94,4 +94,37 @@ RSpec.describe Rails::Crud::Tools::OperationsLogger do
       expect(cell.value).to eq("CU")
     end
   end
+
+  describe "#update_crud_file" do
+    it "ensures that update_crud_file is thread-safe and writes different data from each thread" do
+      instance = dummy_class.new
+      data_list = (1..10).map { |i| "data_#{i}" }
+
+      # 複数スレッドで異なるデータをCrudData.instance.workbookに追加し、update_crud_fileを呼び出す
+      threads = []
+      data_list.each do |data|
+        threads << Thread.new do
+          # 異なるデータを追加
+          sheet = Rails::Crud::Tools::CrudData.instance.workbook[0]
+          sheet.add_cell(sheet.sheet_data.size, 0, data)
+
+          # update_crud_fileを呼び出す
+          instance.send(:update_crud_file)
+        end
+      end
+
+      # 全てのスレッドが終了するのを待つ
+      threads.each(&:join)
+
+      # ファイルの内容を読み込み、すべてのデータが書き込まれているかを確認
+      crud_file = Rails::Crud::Tools::CrudConfig.instance.config.crud_file_path
+      workbook = RubyXL::Parser.parse(crud_file)
+      sheet = workbook[0]
+      written_data = sheet.map { |row| row.cells.map(&:value) }.flatten
+
+      data_list.each do |data|
+        expect(written_data).to include(data)
+      end
+    end
+  end
 end

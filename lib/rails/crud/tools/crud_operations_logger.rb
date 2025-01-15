@@ -10,6 +10,10 @@ module Rails
       # The OperationsLogger module is responsible for logging CRUD operations in controllers and jobs.
       # It provides methods to log request and job details, and to write CRUD operations to an Excel file.
       module OperationsLogger
+        def initialize
+          @mutex = Mutex.new
+        end
+
         # コントローラのCRUD操作をログ出力する
         def log_crud_operations
           config = CrudConfig.instance.config
@@ -94,7 +98,10 @@ module Rails
 
         # ExcelファイルにCRUD操作を書き込む
         def log_and_write_operations(method, key)
-          CrudData.instance.reload_if_needed
+          @mutex.synchronize do
+            CrudData.instance.reload_if_needed
+          end
+
           sheet = CrudData.instance.crud_sheet
 
           # フラグを初期化
@@ -145,19 +152,15 @@ module Rails
         end
 
         def update_crud_file
-          File.open(CrudConfig.instance.config.crud_file_path, "r+") do |crud_file|
-            crud_file.flock(File::LOCK_EX)
-            begin
-              # Excelファイルを書き込む
-              CrudData.instance.workbook.write(crud_file)
-              set_last_modified_by(crud_file, CrudData.instance.process_id)
-              timestamp = File.mtime(crud_file)
-              # タイムスタンプを更新する
-              CrudData.instance.last_loaded_time = timestamp
-              CrudLogger.logger.info "Updated timestamp: #{timestamp}"
-            ensure
-              crud_file.flock(File::LOCK_UN)
-            end
+          @mutex.synchronize do
+            crud_file = CrudConfig.instance.config.crud_file_path
+            # Excelファイルを書き込む
+            CrudData.instance.workbook.write(crud_file)
+            set_last_modified_by(crud_file, CrudData.instance.process_id)
+            timestamp = File.mtime(crud_file)
+            # タイムスタンプを更新する
+            CrudData.instance.last_loaded_time = timestamp
+            CrudLogger.logger.info "Updated timestamp: #{timestamp}"
           end
         end
       end
