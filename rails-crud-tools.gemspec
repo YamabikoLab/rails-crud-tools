@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activerecord", "~> 7.0"
+  spec.add_dependency "activesupport", "~> 7.0"
   spec.add_dependency "rubyXL", "~> 3.4"
   spec.add_dependency "rubyzip", "~> 2.4"
 

@@ -5,7 +5,4 @@ services:
     container_name: rails-crud-tools
     volumes:
       - .:/root/app
-      - /root/app/ide
-    ports:
-      - '5995:5995'
     tty: true
