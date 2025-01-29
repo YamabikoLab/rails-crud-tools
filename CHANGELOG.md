@@ -1,3 +1,6 @@
+## [0.6.11] - 2025-01-30
+- Bug fixes related to activesupport
+
 ## [0.6.10] - 2025-01-11 
 - Required ruby version up
 - Change configuration file to yaml format
