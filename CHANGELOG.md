@@ -1,3 +1,6 @@
+## [0.6.19] - 2025-01-30
+- Bug fixes
+
 ## [0.6.11] - 2025-01-30
 - Bug fixes related to activesupport
 

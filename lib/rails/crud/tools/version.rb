@@ -3,7 +3,7 @@
 module Rails
   module Crud
     module Tools
-      VERSION = "0.6.11"
+      VERSION = "0.6.19"
     end
   end
 end
