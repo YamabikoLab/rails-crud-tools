@@ -99,6 +99,8 @@ module Rails
               f.flock(File::LOCK_UN)
             end
           end
+
+          last_modified_by
         end
 
         # CRUDシートを取得する
