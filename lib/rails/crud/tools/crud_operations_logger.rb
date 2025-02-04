@@ -59,40 +59,33 @@ module Rails
           CrudLogger.logger.debug "Starting to read/write ZIP file: #{file_path}"
           CrudLogger.logger.debug "File size: #{File.size(file_path)}"
 
-          begin
-            File.open(file_path, "r+") do |f|
-              f.flock(File::LOCK_EX)
-              begin
-                Zip::File.open(file_path) do |zip_file|
-                  doc_props = zip_file.find_entry("docProps/core.xml")
-                  if doc_props
-                    content = doc_props.get_input_stream.read
-                    updated_content = if content.include?("<cp:lastModifiedBy>")
-                                      content.sub(
-                                        %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
-                                        "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
-                                      )
-                                    else
-                                      content.sub(
-                                        %r{</cp:coreProperties>},
-                                        "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
-                                      )
-                                    end
-                    zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
-                    CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
-                  else
-                    CrudLogger.logger.warn "docProps/core.xml was not found."
-                  end
+          File.open(file_path, "r+") do |f|
+            f.flock(File::LOCK_EX)
+            begin
+              Zip::File.open(file_path) do |zip_file|
+                doc_props = zip_file.find_entry("docProps/core.xml")
+                if doc_props
+                  content = doc_props.get_input_stream.read
+                  updated_content = if content.include?("<cp:lastModifiedBy>")
+                                    content.sub(
+                                      %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
+                                      "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
+                                    )
+                                  else
+                                    content.sub(
+                                      %r{</cp:coreProperties>},
+                                      "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
+                                    )
+                                  end
+                  zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
+                  CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
+                else
+                  CrudLogger.logger.warn "docProps/core.xml was not found."
                 end
-              ensure
-                f.flock(File::LOCK_UN)
               end
+            ensure
+              f.flock(File::LOCK_UN)
             end
-          rescue StandardError => e
-            CrudLogger.logger.error "Error occurred: #{e.message}. Restoring from backup."
-            FileUtils.mv(backup_path, file_path)
-          ensure
-            FileUtils.rm_f(backup_path) if File.exist?(backup_path)
           end
         end
 
@@ -163,6 +156,11 @@ module Rails
         end
 
         def update_crud_file
+
+          # バックアップを作成
+          backup_path = "#{CrudConfig.instance.config.crud_file_path}.bak"
+          FileUtils.cp(CrudConfig.instance.config.crud_file_path, backup_path)
+
           File.open(CrudConfig.instance.config.crud_file_path, "r+") do |crud_file|
             crud_file.flock(File::LOCK_EX)
             begin
@@ -177,20 +175,8 @@ module Rails
             end
           end
 
-          # バックアップを作成
-          backup_path = "#{CrudConfig.instance.config.crud_file_path}.bak"
-          FileUtils.cp(CrudConfig.instance.config.crud_file_path, backup_path)
-
-          begin
-            # 最終更新者を設定
-            set_last_modified_by(CrudConfig.instance.config.crud_file_path, CrudData.instance.process_id)
-          rescue StandardError => e
-            CrudLogger.logger.error "Error occurred: #{e.message}. Restoring from backup."
-            CrudLogger.logger.error e.backtrace.join("\n")
-            FileUtils.mv(backup_path, CrudConfig.instance.config.crud_file_path)
-          ensure
-            FileUtils.rm_f(backup_path) if File.exist?(backup_path)
-          end
+          # 最終更新者を設定
+          set_last_modified_by(CrudConfig.instance.config.crud_file_path, CrudData.instance.process_id)
         end
       end
     end
