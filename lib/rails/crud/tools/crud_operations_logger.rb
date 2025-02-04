@@ -160,7 +160,6 @@ module Rails
             begin
               # Excelファイルを書き込む
               CrudData.instance.workbook.write(crud_file)
-              set_last_modified_by(crud_file, CrudData.instance.process_id)
               timestamp = File.mtime(crud_file)
               # タイムスタンプを更新する
               CrudData.instance.last_loaded_time = timestamp
@@ -169,6 +168,9 @@ module Rails
               crud_file.flock(File::LOCK_UN)
             end
           end
+
+          # 最終更新者を設定
+          set_last_modified_by(CrudConfig.instance.config.crud_file_path, CrudData.instance.process_id)
         end
       end
     end
