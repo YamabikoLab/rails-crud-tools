@@ -59,10 +59,6 @@ module Rails
           CrudLogger.logger.debug "Starting to read/write ZIP file: #{file_path}"
           CrudLogger.logger.debug "File size: #{File.size(file_path)}"
 
-          # バックアップを作成
-          backup_path = "#{file_path}.bak"
-          FileUtils.cp(file_path, backup_path)
-
           begin
             File.open(file_path, "r+") do |f|
               f.flock(File::LOCK_EX)
@@ -162,7 +158,7 @@ module Rails
           Thread.new do
             update_crud_file
           rescue StandardError => e
-            CrudLogger.logger.error "Failed to update #{CrudConfig.instance.config.crud_file_path}: #{e.message}"
+            CrudLogger.logger.error "Failed to update #{CrudConfig.instance.config.crud_file_path}: #{e.message}\n#{e.backtrace.join("\n")}"
           end
         end
 
@@ -181,8 +177,20 @@ module Rails
             end
           end
 
-          # 最終更新者を設定
-          set_last_modified_by(CrudConfig.instance.config.crud_file_path, CrudData.instance.process_id)
+          # バックアップを作成
+          backup_path = "#{CrudConfig.instance.config.crud_file_path}.bak"
+          FileUtils.cp(CrudConfig.instance.config.crud_file_path, backup_path)
+
+          begin
+            # 最終更新者を設定
+            set_last_modified_by(CrudConfig.instance.config.crud_file_path, CrudData.instance.process_id)
+          rescue StandardError => e
+            CrudLogger.logger.error "Error occurred: #{e.message}. Restoring from backup."
+            CrudLogger.logger.error e.backtrace.join("\n")
+            FileUtils.mv(backup_path, CrudConfig.instance.config.crud_file_path)
+          ensure
+            FileUtils.rm_f(backup_path) if File.exist?(backup_path)
+          end
         end
       end
     end
