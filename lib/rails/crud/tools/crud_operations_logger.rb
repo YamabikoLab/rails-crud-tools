@@ -57,33 +57,33 @@ module Rails
         def set_last_modified_by(file_path, modifier_name)
           CrudLogger.logger.debug "Starting to read/write ZIP file: #{file_path}"
           CrudLogger.logger.debug "File size: #{File.size(file_path)}"
-          
-          Zip::File.open(file_path) do |zip_file|
-            doc_props = zip_file.find_entry("docProps/core.xml")
-            if doc_props
-              content = doc_props.get_input_stream.read
-              updated_content = if content.include?("<cp:lastModifiedBy>")
-                                content.sub(
-                                  %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
-                                  "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
-                                )
-                              else
-                                content.sub(
-                                  %r{</cp:coreProperties>},
-                                  "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
-                                )
-                              end
-              File.open(file_path, "r+") do |f|
-                f.flock(File::LOCK_EX)
-                begin
+
+          File.open(file_path, "r+") do |f|
+            f.flock(File::LOCK_EX)
+            begin
+              Zip::File.open(file_path) do |zip_file|
+                doc_props = zip_file.find_entry("docProps/core.xml")
+                if doc_props
+                  content = doc_props.get_input_stream.read
+                  updated_content = if content.include?("<cp:lastModifiedBy>")
+                                    content.sub(
+                                      %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
+                                      "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
+                                    )
+                                  else
+                                    content.sub(
+                                      %r{</cp:coreProperties>},
+                                      "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
+                                    )
+                                  end
                   zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
                   CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
-                ensure
-                  f.flock(File::LOCK_UN)
+                else
+                  CrudLogger.logger.warn "docProps/core.xml was not found."
                 end
               end
-            else
-              CrudLogger.logger.warn "docProps/core.xml was not found."
+            ensure
+              f.flock(File::LOCK_UN)
             end
           end
         end
