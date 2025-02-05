@@ -1,3 +1,7 @@
+## [0.6.20] - 2025-02-05
+- modified CRUD diagram is backed up on update
+- made last updated thread-safe
+
 ## [0.6.19] - 2025-01-30
 - Bug fixes
 

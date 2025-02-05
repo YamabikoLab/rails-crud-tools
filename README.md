@@ -53,6 +53,17 @@ sql_logging_enabled: true # Enables or disables SQL logging for CRUD operations
 Once integrated, the gem automatically tracks CRUD operations (Create, Read, Update, Delete) performed in your application.   
 The diagrams will update dynamically based on these operations, providing you with real-time insights into your application's data flow.
 
+### Automatic Backup
+
+The gem automatically creates backup files when updating the CRUD diagram. When changes are made to the CRUD Excel file:
+
+1. A backup file is created with the `.bak` extension (e.g., `crud.xlsx.bak`)
+2. The backup is created before any modifications to the original file
+3. If an error occurs during the update, the backup file is used to restore the original file
+4. The backup file is automatically removed after a successful update
+
+This ensures that your CRUD diagram data is protected against potential corruption or errors during updates.
+
 ## Logs
 
 Please refer to the log file at `log/crud.log`.
