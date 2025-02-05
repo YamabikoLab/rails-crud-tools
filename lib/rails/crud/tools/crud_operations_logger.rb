@@ -3,7 +3,7 @@
 require "zip"
 require_relative "crud_logger"
 require_relative "constants"
-require 'fileutils'
+require "fileutils"
 
 module Rails
   module Crud
@@ -67,16 +67,16 @@ module Rails
                 if doc_props
                   content = doc_props.get_input_stream.read
                   updated_content = if content.include?("<cp:lastModifiedBy>")
-                                    content.sub(
-                                      %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
-                                      "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
-                                    )
-                                  else
-                                    content.sub(
-                                      %r{</cp:coreProperties>},
-                                      "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
-                                    )
-                                  end
+                                      content.sub(
+                                        %r{<cp:lastModifiedBy>.*?</cp:lastModifiedBy>},
+                                        "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy>"
+                                      )
+                                    else
+                                      content.sub(
+                                        %r{</cp:coreProperties>},
+                                        "<cp:lastModifiedBy>#{modifier_name}</cp:lastModifiedBy></cp:coreProperties>"
+                                      )
+                                    end
                   zip_file.get_output_stream("docProps/core.xml") { |f| f.write(updated_content) }
                   CrudLogger.logger.info "Set the last modifier to #{modifier_name}."
                 else
@@ -156,10 +156,11 @@ module Rails
         end
 
         def update_crud_file
-
           # バックアップを作成
-          backup_path = "#{CrudConfig.instance.config.crud_file_path}.bak"
-          FileUtils.cp(CrudConfig.instance.config.crud_file_path, backup_path)
+          if File.size(CrudConfig.instance.config.crud_file_path).positive?
+            backup_path = "#{CrudConfig.instance.config.crud_file_path}.bak"
+            FileUtils.cp(CrudConfig.instance.config.crud_file_path, backup_path)
+          end
 
           File.open(CrudConfig.instance.config.crud_file_path, "r+") do |crud_file|
             crud_file.flock(File::LOCK_EX)

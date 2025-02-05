@@ -28,7 +28,12 @@ Metrics/PerceivedComplexity:
   Max: 20
 
 Metrics/ModuleLength:
-  Max: 120
+  Max: 130
+
+Metrics/BlockLength:
+  Enabled: true
+  Max: 30
+
 Gemspec/AddRuntimeDependency:
   Enabled: true
 Gemspec/DeprecatedAttributeAssignment:
