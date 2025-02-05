@@ -59,8 +59,6 @@ The gem automatically creates backup files when updating the CRUD diagram. When 
 
 1. A backup file is created with the `.bak` extension (e.g., `crud.xlsx.bak`)
 2. The backup is created before any modifications to the original file
-3. If an error occurs during the update, the backup file is used to restore the original file
-4. The backup file is automatically removed after a successful update
 
 This ensures that your CRUD diagram data is protected against potential corruption or errors during updates.
 
