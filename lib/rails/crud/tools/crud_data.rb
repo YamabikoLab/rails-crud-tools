@@ -79,15 +79,24 @@ module Rails
 
         # xlsxファイルの最終更新者を取得する
         def get_last_modified_by(file_path)
-          last_modified_by = nil
+          CrudLogger.logger.debug "Starting to read ZIP file: #{file_path}"
+          CrudLogger.logger.debug "File size: #{File.size(file_path)}"
 
-          Zip::File.open(file_path) do |zipfile|
-            doc_props = zipfile.find_entry("docProps/core.xml")
-            if doc_props
-              content = doc_props.get_input_stream.read
-              last_modified_by = content[%r{<cp:lastModifiedBy>(.*?)</cp:lastModifiedBy>}, 1]
-            else
-              CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
+          last_modified_by = nil
+          File.open(file_path, "r") do |f|
+            f.flock(File::LOCK_SH)
+            begin
+              Zip::File.open(file_path) do |zipfile|
+                doc_props = zipfile.find_entry("docProps/core.xml")
+                if doc_props
+                  content = doc_props.get_input_stream.read
+                  last_modified_by = content[%r{<cp:lastModifiedBy>(.*?)</cp:lastModifiedBy>}, 1]
+                else
+                  CrudLogger.logger.warn "docProps/core.xml が見つかりませんでした。"
+                end
+              end
+            ensure
+              f.flock(File::LOCK_UN)
             end
           end
 
